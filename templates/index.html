@@ -1,41 +1,71 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 style="text-align: center;">Task Master Tutorial</h1>
+<h1 style="text-align: center;">Title</h1>
 {% endblock %}
 
 {% block body %}
 <div class="content">
-    {% if tasks|length < 1%}
-
-    <h4>there are no tasks create one below</h4>
-
+    <h1>Objectives</h1>
+    {% if objectives|length < 1%}
+    <h4>there are no objectives create one below</h4>
     {% else %}
     <table>
         <tr>
-            <th>Task</th>
+            <th>Objective</th>
             <th>Id</th>
+            <th>Key Results</th>
             <th>Actions</th>
         </tr>
 
-        {% for task in tasks %}
+        {% for objective in objectives %}
             <tr>
-                <td>{{ task.content }}</td>
-                <td>{{ task.id }}</td>
+                <td>{{ objective.content }}</td>
+                <td>{{ objective.id }}</td>
+                <!-- <td>{{ objective.key_results }}</td> -->
+                # TODO: figure out how to loop through elem
+
                 <td>
-                    <a href="/delete/{{task.id}}">Delete</a>
+                    <a href="/delete/objective/{{objective.id}}">Delete</a>
                     <br>
-                    <a href="/update/{{task.id}}">Update</a>
+                    <a href="/update/objective/{{objective.id}}">Update</a>
                 </td>
             </tr>
         {% endfor %}
-    
     </table>
     {% endif %}
-    
     <form action="/" method="POST">
-        <input type="text" name="content" id="content">
-        <input type="submit" value="Add task">
+        <input type="text" name="objective_content" id="objective_content">
+        <input type="submit" value="Add objective">
     </form>
+
+    <!-- <br>
+    <h1>Key Results</h1>
+    <table>
+        <tr>
+            <th>Key Result</th>
+            <th>Id</th>
+            <th>Task</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for objective in objectives %}
+            <tr>
+                <td>{{ objective.content }}</td>
+                <td>{{ objective.id }}</td>
+                <td>{{ objective.key_results }}</td>
+                <td>
+                    <a href="/delete/objective/{{objective.id}}">Delete</a>
+                    <br>
+                    <a href="/update/objective/{{objective.id}}">Update</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <form action="/" method="POST">
+        <input type="text" name="key_result_content" id="key_result_content">
+        <input type="submit" value="Add Key Result">
+    </form> -->
+
 </div>
 {% endblock %}

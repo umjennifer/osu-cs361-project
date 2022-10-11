@@ -9,53 +9,72 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
-
-class Todo(db.Model):
+# TODO: create objects for objectives, key results, tasks?
+class Objective(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
+    key_results = db.relationship('Key_Result', backref='objective')
 
     def __repr__(self):
         return '<Task %r>' % self.id
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    if request.method == 'POST':
-        task_content = request.form['content']
-        new_task = Todo(content=task_content)
+class Key_Result(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(200), nullable=False)
+    objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'))
 
-        try:
-            db.session.add(new_task)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding your task'
+@app.route('/', methods=['POST'])
+def create():
+    print("request.form=", request.form)  # TODO: delete
+    objective_content = request.form['objective_content']
+    new_objective = Objective(content=objective_content)
 
-    else:
-        tasks = Todo.query.order_by(Todo.id).all()
-        return render_template('index.html', tasks=tasks)
-
-@app.route('/delete/<int:id>')
-def delete(id):
-    task_to_delete = Todo.query.get_or_404(id)
     try:
-        db.session.delete(task_to_delete)
+        db.session.add(new_objective)
         db.session.commit()
         return redirect('/')
     except:
-        return 'There was a problem deleting that task'
+        return 'There was an issue adding your objective'
 
-@app.route('/update/<int:id>', methods=['GET','POST'])
+@app.route('/', methods=['GET'])
+def index():
+    # if request.method == 'POST':
+    #     objective_content = request.form['content']
+    #     new_objective = Objective(content=objective_content)
+
+    #     try:
+    #         db.session.add(new_objective)
+    #         db.session.commit()
+    #         return redirect('/')
+    #     except:
+    #         return 'There was an issue adding your objective'
+
+    # else:
+        objectives = Objective.query.order_by(Objective.id).all()
+        return render_template('index.html', objectives=objectives)
+
+@app.route('/delete/objective/<int:id>')
+def delete(id):
+    objective_to_delete = Objective.query.get_or_404(id)
+    try:
+        db.session.delete(objective_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was a problem deleting that objective'
+
+@app.route('/update/objective/<int:id>', methods=['GET','POST'])
 def update(id):
-    task = Todo.query.get_or_404(id)
+    objective = Objective.query.get_or_404(id)
     if request.method == 'POST':
-        task.content = request.form['content']
+        objective.content = request.form['content']
         try:
             db.session.commit()
             return redirect('/')
         except:
-            return 'there was an issue updating your task'
+            return 'there was an issue updating your objective'
     else:
-        return render_template('update.html', task=task)
+        return render_template('update.html', objective=objective)
 
 if __name__ == "__main__":
     app.run(debug=True)
@@ -69,3 +88,14 @@ if __name__ == "__main__":
 # from app import db
 # with app.app_context():
 #     db.create_all()
+
+
+# from app import app,db,Objective,Key_Result
+# with app.app_context():
+#     kr1 = Key_Result(content='kr1', objective_id=1)
+#     kr2 = Key_Result(content='kr2', objective_id=1)
+#     kr3 = Key_Result(content='kr3', objective_id=1)
+#     db.session.add(kr1)
+#     db.session.add(kr2)
+#     db.session.add(kr3)
+#     db.session.commit()

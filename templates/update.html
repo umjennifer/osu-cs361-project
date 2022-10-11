@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 style="text-align: center;">Update taks</h1>
+<h1 style="text-align: center;">Update objectives</h1>
 {% endblock %}
 
 {% block body %}
 <div class="content">
 
-    <form action="/update/{{ task.id }}" method="POST">
-        <input type="text" name="content" id="content" value="{{task.content}}">
-        <input type="submit" value="Update task">
+    <form action="/update/objective/{{ objective.id }}" method="POST">
+        <input type="text" name="content" id="content" value="{{objective.content}}">
+        <input type="submit" value="Update objective">
     </form>
 </div>
 {% endblock %}
