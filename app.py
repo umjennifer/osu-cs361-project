@@ -14,6 +14,7 @@ class Objective(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     key_results = db.relationship('Key_Result', backref='objective')
+    # TODO: cascade delete
 
     def __repr__(self):
         return '<Task %r>' % self.id
@@ -21,13 +22,28 @@ class Objective(db.Model):
 class Key_Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
-    objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'))
+    objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'))  # TODO: set as can't be null
+     # TODO: cascade delete
 
-@app.route('/', methods=['POST'])
-def create():
-    print("request.form=", request.form)  # TODO: delete
+@app.route('/create/key_result', methods=['POST'])
+def create_key_result():
+    print("request.form=", request.form)
+    key_result_content = request.form['key_result_content']
+    objective_id = int(request.form['objective_id'])
+    new_key_result = Key_Result(content=key_result_content,objective_id=objective_id)
+    try:
+        db.session.add(new_key_result)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was an issue adding your key result'
+
+@app.route('/create/objective', methods=['POST'])
+def create_objective():
     objective_content = request.form['objective_content']
     new_objective = Objective(content=objective_content)
+
+    print("objective_content=",objective_content)
 
     try:
         db.session.add(new_objective)
@@ -35,6 +51,7 @@ def create():
         return redirect('/')
     except:
         return 'There was an issue adding your objective'
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -54,7 +71,7 @@ def index():
         return render_template('index.html', objectives=objectives)
 
 @app.route('/delete/objective/<int:id>')
-def delete(id):
+def delete_objective(id):
     objective_to_delete = Objective.query.get_or_404(id)
     try:
         db.session.delete(objective_to_delete)
@@ -62,6 +79,16 @@ def delete(id):
         return redirect('/')
     except:
         return 'There was a problem deleting that objective'
+
+@app.route('/delete/key_result/<int:id>')
+def delete_key_result(id):
+    key_result_to_delete = Key_Result.query.get_or_404(id)
+    try:
+        db.session.delete(key_result_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was a problem deleting that key result'
 
 @app.route('/update/objective/<int:id>', methods=['GET','POST'])
 def update(id):
@@ -75,6 +102,9 @@ def update(id):
             return 'there was an issue updating your objective'
     else:
         return render_template('update.html', objective=objective)
+
+#TODO: update for key result
+
 
 if __name__ == "__main__":
     app.run(debug=True)
@@ -99,3 +129,7 @@ if __name__ == "__main__":
 #     db.session.add(kr2)
 #     db.session.add(kr3)
 #     db.session.commit()
+
+# from app import app,db,Objective,Key_Result
+# with app.app_context():
+#     db.select([Key])

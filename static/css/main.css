@@ -8,7 +8,10 @@ body, html {
     margin: 0 auto;
     width: 400px;
 }
-
+.tab {
+    display: inline-block;
+    margin-left: 40px;
+}
 table, td, th {
     border: 1px solid #aaa;
 }

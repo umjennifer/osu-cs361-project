@@ -10,31 +10,34 @@
     {% if objectives|length < 1%}
     <h4>there are no objectives create one below</h4>
     {% else %}
-    <table>
-        <tr>
-            <th>Objective</th>
-            <th>Id</th>
-            <th>Key Results</th>
-            <th>Actions</th>
-        </tr>
 
-        {% for objective in objectives %}
-            <tr>
-                <td>{{ objective.content }}</td>
-                <td>{{ objective.id }}</td>
-                <!-- <td>{{ objective.key_results }}</td> -->
-                # TODO: figure out how to loop through elem
+    {% for objective in objectives %}
+        <br><br>
+        <h2>{{ objective.content }}</h2> <a href="/update/objective/{{objective.id}}">Update</a> | <a href="/delete/objective/{{objective.id}}">Delete</a><br>
+        ID: {{ objective.id }}<br>
 
-                <td>
-                    <a href="/delete/objective/{{objective.id}}">Delete</a>
-                    <br>
-                    <a href="/update/objective/{{objective.id}}">Update</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+        <!-- LeKey Results: {{ objective.key_results | length }}<br><br> -->
+        <!-- Length of key results: {{objective.key_results | count}} <br> -->
+
+        Key Results:<br>
+        {% if objective.key_results|length < 1%}
+            <span class="tab"></span>There are no key results.
+        {% else %}
+            {% for kr in objective.key_results %}
+                <span class="tab"></span>{{kr.content}} (<a href="/update/key_result/{{kr.id}}">Update</a> | <a href="/delete/key_result/{{kr.id}}">Delete</a>)<br>
+            {% endfor %}
+        {% endif %}
+        <form action="/create/key_result" method="POST">
+            <input type="text" name="key_result_content" id="key_result_content">
+            <input type="hidden" name="objective_id" value="{{objective.id}}">
+            <input type="submit" value="Add key result">
+        </form>
+    {% endfor %}
+
+    <br>
+    <br>
     {% endif %}
-    <form action="/" method="POST">
+    <form action="/create/objective" method="POST">
         <input type="text" name="objective_content" id="objective_content">
         <input type="submit" value="Add objective">
     </form>
