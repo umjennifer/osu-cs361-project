@@ -1,34 +1,56 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 style="text-align: center;">Title</h1>
+<h1 style="text-align: center;">OKR</h1>
 {% endblock %}
 
 {% block body %}
+
+<tbody>
+    <tr data-toggle="collapse" data-target="#test"  class="clickable">
+        <td>
+            hehe
+        </td>
+    </tr>
+
+</tbody>
+
 <div class="content">
-    <h1>Objectives</h1>
     {% if objectives|length < 1%}
-    <h4>there are no objectives create one below</h4>
+    There are no objectives create one below.<br>
     {% else %}
 
     {% for objective in objectives %}
-        <br><br>
-        <h2>{{ objective.content }}</h2> <a href="/update/objective/{{objective.id}}">Update</a> | <a href="/delete/objective/{{objective.id}}">Delete</a><br>
-        ID: {{ objective.id }}<br>
+    <br>
+        Objective: {{ objective.content }} (<a href="/update/objective/{{objective.id}}">Update</a> | <a href="/delete/objective/{{objective.id}}">Delete</a>)<br>
+        <!-- ID: {{ objective.id }}<br> -->
 
-        <!-- LeKey Results: {{ objective.key_results | length }}<br><br> -->
-        <!-- Length of key results: {{objective.key_results | count}} <br> -->
-
-        Key Results:<br>
+        <!-- Key Results:<br> -->
         {% if objective.key_results|length < 1%}
             <span class="tab"></span>There are no key results.
         {% else %}
             {% for kr in objective.key_results %}
-                <span class="tab"></span>{{kr.content}} (<a href="/update/key_result/{{kr.id}}">Update</a> | <a href="/delete/key_result/{{kr.id}}">Delete</a>)<br>
+                <span class="tab"></span>Key Result: {{kr.content}} (<a href="/update/key_result/{{kr.id}}">Update</a> | <a href="/delete/key_result/{{kr.id}}">Delete</a>)<br>
+
+                {% if kr.tasks|length < 1%}
+                    <span class="tab"></span><span class="tab"></span>There are no tasks.<br>
+                {% else %}
+                    {% for task in kr.tasks %}
+                        <span class="tab"></span><span class="tab"></span>Task: {{task.content}} (<a href="/update/task/{{task.id}}">Update</a> | <a href="/delete/task/{{task.id}}">Delete</a>)<br>
+                    {% endfor %}
+               {% endif %}
+               <form action="/create/task" method="POST">
+                    <!-- TODO: move style to css -->
+                    <input type="text" name="task_content" id="task_content" style="margin-left: 80px;">
+                    <input type="hidden" name="key_result_id" value="{{kr.id}}">
+                    <input type="submit" value="Add task">
+                </form>
+
             {% endfor %}
         {% endif %}
         <form action="/create/key_result" method="POST">
-            <input type="text" name="key_result_content" id="key_result_content">
+            <!-- TODO: move style to css -->
+            <input type="text" name="key_result_content" id="key_result_content" style="margin-left: 40px;">
             <input type="hidden" name="objective_id" value="{{objective.id}}">
             <input type="submit" value="Add key result">
         </form>
@@ -37,6 +59,7 @@
     <br>
     <br>
     {% endif %}
+    
     <form action="/create/objective" method="POST">
         <input type="text" name="objective_content" id="objective_content">
         <input type="submit" value="Add objective">

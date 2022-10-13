@@ -6,15 +6,14 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///okr.db'
 db = SQLAlchemy(app)
 
 # TODO: create objects for objectives, key results, tasks?
 class Objective(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
-    key_results = db.relationship('Key_Result', backref='objective')
-    # TODO: cascade delete
+    key_results = db.relationship('Key_Result', backref='objective', cascade="all, delete-orphan")
 
     def __repr__(self):
         return '<Task %r>' % self.id
@@ -23,11 +22,17 @@ class Key_Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'))  # TODO: set as can't be null
+    tasks = db.relationship('Task', backref='key_result', cascade="all, delete-orphan")
+     # TODO: cascade delete
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(200), nullable=False)
+    key_result_id = db.Column(db.Integer, db.ForeignKey('key__result.id'))  # TODO: set as can't be null
      # TODO: cascade delete
 
 @app.route('/create/key_result', methods=['POST'])
 def create_key_result():
-    print("request.form=", request.form)
     key_result_content = request.form['key_result_content']
     objective_id = int(request.form['objective_id'])
     new_key_result = Key_Result(content=key_result_content,objective_id=objective_id)
@@ -38,13 +43,22 @@ def create_key_result():
     except:
         return 'There was an issue adding your key result'
 
+@app.route('/create/task', methods=['POST'])
+def create_task():
+    task_content = request.form['task_content']
+    key_result_id = int(request.form['key_result_id'])
+    new_task = Task(content=task_content,key_result_id=key_result_id)
+    try:
+        db.session.add(new_task)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was an issue adding your task'
+
 @app.route('/create/objective', methods=['POST'])
 def create_objective():
     objective_content = request.form['objective_content']
     new_objective = Objective(content=objective_content)
-
-    print("objective_content=",objective_content)
-
     try:
         db.session.add(new_objective)
         db.session.commit()
@@ -55,20 +69,8 @@ def create_objective():
 
 @app.route('/', methods=['GET'])
 def index():
-    # if request.method == 'POST':
-    #     objective_content = request.form['content']
-    #     new_objective = Objective(content=objective_content)
-
-    #     try:
-    #         db.session.add(new_objective)
-    #         db.session.commit()
-    #         return redirect('/')
-    #     except:
-    #         return 'There was an issue adding your objective'
-
-    # else:
-        objectives = Objective.query.order_by(Objective.id).all()
-        return render_template('index.html', objectives=objectives)
+    objectives = Objective.query.order_by(Objective.id).all()
+    return render_template('index.html', objectives=objectives)
 
 @app.route('/delete/objective/<int:id>')
 def delete_objective(id):
@@ -90,6 +92,16 @@ def delete_key_result(id):
     except:
         return 'There was a problem deleting that key result'
 
+@app.route('/delete/task/<int:id>')
+def delete_task(id):
+    task_to_delete = Task.query.get_or_404(id)
+    try:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was a problem deleting that task'
+
 @app.route('/update/objective/<int:id>', methods=['GET','POST'])
 def update(id):
     objective = Objective.query.get_or_404(id)
@@ -104,6 +116,7 @@ def update(id):
         return render_template('update.html', objective=objective)
 
 #TODO: update for key result
+# TODO: update for tasks
 
 
 if __name__ == "__main__":
@@ -113,7 +126,7 @@ if __name__ == "__main__":
     # pass
 
 
-# # to create a new db
+# to create a new db
 # from app import app
 # from app import db
 # with app.app_context():
