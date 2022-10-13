@@ -23,7 +23,7 @@ class Key_Result(db.Model):
     content = db.Column(db.String(200), nullable=False)
     objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'))  # TODO: set as can't be null
     tasks = db.relationship('Task', backref='key_result', cascade="all, delete-orphan")
-     # TODO: cascade delete
+     # TODO: cascade this delete
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
