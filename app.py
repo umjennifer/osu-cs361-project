@@ -1,11 +1,13 @@
 from unicodedata import name
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 
-app = Flask(__name__)
+new_feature = True
 
+app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///okr.db'
 db = SQLAlchemy(app)
 
@@ -69,6 +71,8 @@ def create_objective():
 
 @app.route('/', methods=['GET'])
 def index():
+    if new_feature is True:
+        flash('New feature: You can now add a due date to a task using the date picker. Read the Changelog for more information and instructions.') # TODO: figure out new feature process
     objectives = Objective.query.order_by(Objective.id).all()
     return render_template('index.html', objectives=objectives)
 
@@ -121,28 +125,9 @@ def update(id):
 
 if __name__ == "__main__":
     app.run(debug=True)
-    # with app.app_context():
-    #     db.create_all()
-    # pass
-
 
 # to create a new db
 # from app import app
 # from app import db
 # with app.app_context():
 #     db.create_all()
-
-
-# from app import app,db,Objective,Key_Result
-# with app.app_context():
-#     kr1 = Key_Result(content='kr1', objective_id=1)
-#     kr2 = Key_Result(content='kr2', objective_id=1)
-#     kr3 = Key_Result(content='kr3', objective_id=1)
-#     db.session.add(kr1)
-#     db.session.add(kr2)
-#     db.session.add(kr3)
-#     db.session.commit()
-
-# from app import app,db,Objective,Key_Result
-# with app.app_context():
-#     db.select([Key])

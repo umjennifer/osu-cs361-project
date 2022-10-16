@@ -8,9 +8,9 @@ body, html {
     margin: 0 auto;
     width: 400px;
 }
-.tab {
+.tab-10px {
     display: inline-block;
-    margin-left: 40px;
+    margin-left: 10px;
 }
 table, td, th {
     border: 1px solid #aaa;

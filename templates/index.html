@@ -1,177 +1,106 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 style="text-align: center;">OKR</h1>
+<h1 style="text-align: center;">Objective Tracker</h1>
 {% endblock %}
 
 {% block body %}
 
+  {% for message in get_flashed_messages()%}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{message}}
+      <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% endfor %}
+  
+
+  {% if objectives|length < 1%}
+      There are no objectives create one below.<br>
+  {% else %}
+      {% for objective in objectives %}
+          <div class="accordion" id="{{objective.id}}_accordian">
+              <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-objective-{{objective.id}}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseobjective-{{objective.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapseobjective-{{objective.id}}">
+
+                      <span class="badge text-bg-light">Objective</span>
+                      <span class="tab-10px">{{objective.content}}</span>
+
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseobjective-{{objective.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingobjective-{{objective.id}}">
+                    <div class="accordion-body">
+
+                      <a href="/update/objective/{{objective.id}}">Update Objective</a> | <a href="/delete/objective/{{objective.id}}">Delete Objective</a><br><br>
+                      {% if objective.key_results|length < 1%}
+                          There are no key results.
+                      {% else %}
+                          {% for kr in objective.key_results %}
+                              <div class="accordion-item">
+                                  <h2 class="accordion-header" id="panelsStayOpen-kr-{{kr.id}}">
+                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsekr-{{kr.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapsekr-{{kr.id}}">
+
+                                    <span class="badge text-bg-secondary">Key Result</span>
+                                    <span class="tab-10px">{{kr.content}}</span>
+
+                                  </button>
+                                  </h2>
+                                  <div id="panelsStayOpen-collapsekr-{{kr.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingkr-{{kr.id}}">
+                                  <div class="accordion-body">
+
+                                      <a href="/update/key_result/{{kr.id}}">Update Key Result</a> | <a href="/delete/key_result/{{kr.id}}">Delete Key Result</a><br><br>
+                                      {% if kr.tasks|length < 1%}
+                                          There are no tasks.<br>
+                                      {% else %}
+                                          {% for task in kr.tasks %}
+                                              <div class="accordion-item">
+                                                  <h2 class="accordion-header" id="panelsStayOpen-heading-task{{task.id}}">
+                                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse-task{{task.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapse-task{{task.id}}">
+
+                                                    <span class="badge text-bg-dark">Task</span>
+                                                    <span class="tab-10px">{{task.content}}</span>
+
+                                                  </button>
+                                                  </h2>
+                                                  <div id="panelsStayOpen-collapse-task{{task.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading-task{{task.id}}">
+                                                  <div class="accordion-body">
+                                                      <a href="/update/task/{{task.id}}">Update Task</a> | <a href="/delete/task/{{task.id}}">Delete Task</a>
+                                                  </div>
+                                                  </div>
+                                              </div>
+
+                                          {% endfor %}
+                                      {% endif %}
+                                          <form action="/create/task" method="POST">
+                                              <input type="text" name="task_content" id="task_content">
+                                              <input type="hidden" name="key_result_id" value="{{kr.id}}">
+                                              <input type="submit" value="Add task">
+                                          </form>
 
 
-{% if objectives|length < 1%}
-    There are no objectives create one below.<br>
-{% else %}
-    {% for objective in objectives %}
-        <div class="accordion" id="{{objective.id}}_accordian">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="panelsStayOpen-objective-{{objective.id}}">
-                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseobjective-{{objective.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapseobjective-{{objective.id}}">
-                   {{objective.content}}
-                  </button>
-                </h2>
-                <div id="panelsStayOpen-collapseobjective-{{objective.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingobjective-{{objective.id}}">
-                  <div class="accordion-body">
+                                  </div>
+                                  </div>
+                              </div>
+                          {% endfor %}
+                      
+                      {% endif %}
+                      <form action="/create/key_result" method="POST">
+                          <input type="text" name="key_result_content" id="key_result_content">
+                          <input type="hidden" name="objective_id" value="{{objective.id}}">
+                          <input type="submit" value="Add key result">
+                      </form>
 
-                    <a href="/update/objective/{{objective.id}}">Update</a> | <a href="/delete/objective/{{objective.id}}">Delete</a><br>
-                    <br>
-                    Key Results<br>
-                    {% if objective.key_results|length < 1%}
-                        There are no key results.
-                    {% else %}
-                        {% for kr in objective.key_results %}
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="panelsStayOpen-kr-{{kr.id}}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsekr-{{kr.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapsekr-{{kr.id}}">
-                                    {{kr.content}}
-                                </button>
-                                </h2>
-                                <div id="panelsStayOpen-collapsekr-{{kr.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingkr-{{kr.id}}">
-                                <div class="accordion-body">
-
-                                    <a href="/update/key_result/{{kr.id}}">Update</a> | <a href="/delete/key_result/{{kr.id}}">Delete</a><br><br>
-                                    Tasks<br>
-                                    {% if kr.tasks|length < 1%}
-                                        There are no tasks.<br>
-                                    {% else %}
-                                        {% for task in kr.tasks %}
-
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="panelsStayOpen-heading-task{{task.id}}">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse-task{{task.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapse-task{{task.id}}">
-                                                    {{task.content}}
-                                                </button>
-                                                </h2>
-                                                <div id="panelsStayOpen-collapse-task{{task.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading-task{{task.id}}">
-                                                <div class="accordion-body">
-                                                    <a href="/update/task/{{task.id}}">Update</a> | <a href="/delete/task/{{task.id}}">Delete</a>
-                                                </div>
-                                                </div>
-                                            </div>
-
-                                        {% endfor %}
-                                    {% endif %}
-                                        <form action="/create/task" method="POST">
-                                            <input type="text" name="task_content" id="task_content">
-                                            <input type="hidden" name="key_result_id" value="{{kr.id}}">
-                                            <input type="submit" value="Add task">
-                                        </form>
-
-
-                                </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    
-                    {% endif %}
-                    <form action="/create/key_result" method="POST">
-                        <input type="text" name="key_result_content" id="key_result_content">
-                        <input type="hidden" name="objective_id" value="{{objective.id}}">
-                        <input type="submit" value="Add key result">
-                    </form>
-
+                    </div>
                   </div>
                 </div>
-              </div>
-        </div>
+          </div>
 
-    {% endfor %}
-{% endif %}
-    
-<form action="/create/objective" method="POST">
-    <input type="text" name="objective_content" id="objective_content">
-    <input type="submit" value="Add objective">
-</form>
-
-
-
-<!-- <div class="accordion accordion-flush" id="accordionFlushExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-          Accordion Item #1
-        </button>
-      </h2>
-      <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the first item's accordion body.</div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingTwo">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-          Accordion Item #2
-        </button>
-      </h2>
-      <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the second item's accordion body. Let's imagine this being filled with some actual content.</div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingThree">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-          Accordion Item #3
-        </button>
-      </h2>
-      <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the third item's accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look, at least at first glance, a bit more representative of how this would look in a real-world application.</div>
-      </div>
-    </div>
-  </div> -->
-<!-- 
-<div class="content">
-    {% if objectives|length < 1%}
-    There are no objectives create one below.<br>
-    {% else %}
-
-    {% for objective in objectives %}
-    <br>
-        Objective: {{ objective.content }} (<a href="/update/objective/{{objective.id}}">Update</a> | <a href="/delete/objective/{{objective.id}}">Delete</a>)<br>
-        
-        {% if objective.key_results|length < 1%}
-            <span class="tab"></span>There are no key results.
-        {% else %}
-            {% for kr in objective.key_results %}
-                <span class="tab"></span>Key Result: {{kr.content}} (<a href="/update/key_result/{{kr.id}}">Update</a> | <a href="/delete/key_result/{{kr.id}}">Delete</a>)<br>
-
-                {% if kr.tasks|length < 1%}
-                    <span class="tab"></span><span class="tab"></span>There are no tasks.<br>
-                {% else %}
-                    {% for task in kr.tasks %}
-                        <span class="tab"></span><span class="tab"></span>Task: {{task.content}} (<a href="/update/task/{{task.id}}">Update</a> | <a href="/delete/task/{{task.id}}">Delete</a>)<br>
-                    {% endfor %}
-               {% endif %}
-               <form action="/create/task" method="POST">
-                    <input type="text" name="task_content" id="task_content" style="margin-left: 80px;">
-                    <input type="hidden" name="key_result_id" value="{{kr.id}}">
-                    <input type="submit" value="Add task">
-                </form>
-
-            {% endfor %}
-        {% endif %}
-        <form action="/create/key_result" method="POST">
-            <input type="text" name="key_result_content" id="key_result_content" style="margin-left: 40px;">
-            <input type="hidden" name="objective_id" value="{{objective.id}}">
-            <input type="submit" value="Add key result">
-        </form>
-    {% endfor %}
-
-    <br>
-    <br>
-    {% endif %}
-    
-    <form action="/create/objective" method="POST">
-        <input type="text" name="objective_content" id="objective_content">
-        <input type="submit" value="Add objective">
-    </form>
-</div> -->
+      {% endfor %}
+  {% endif %}
+  <form action="/create/objective" method="POST">
+      <input type="text" name="objective_content" id="objective_content">
+      <input type="submit" value="Add objective">
+  </form>
 {% endblock %}
-                    <!-- TODO: move style to css -->
