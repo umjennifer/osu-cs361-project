@@ -37,3 +37,14 @@ td {
 #content {
     width: 70%;
 }
+
+.anchor-link {
+    color: gray;
+    text-decoration: none; 
+}
+
+.anchor-link:hover {
+    color: blue;
+    text-decoration: none; 
+    transition: color 0.30s ease-in-out,opacity 0.30s ease-in-out;
+}

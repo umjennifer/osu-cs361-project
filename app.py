@@ -72,7 +72,7 @@ def create_objective():
 @app.route('/', methods=['GET'])
 def index():
     if new_feature is True:
-        flash('New feature: You can now add a due date to a task using the date picker. Read the Changelog for more information and instructions.') # TODO: figure out new feature process
+        flash('New feature: You can now use a date picker to add a due date to a task. Read the Changelog for more information and instructions.') # TODO: figure out new feature process
     objectives = Objective.query.order_by(Objective.id).all()
     return render_template('index.html', objectives=objectives)
 
@@ -118,6 +118,19 @@ def update(id):
             return 'there was an issue updating your objective'
     else:
         return render_template('update.html', objective=objective)
+
+
+@app.route('/changelog', methods=['GET'])
+def changelog():
+    return render_template('changelog.html')
+
+@app.route('/example', methods=['GET'])
+def example():
+    return render_template('example.html')
+
+@app.route('/instructions', methods=['GET'])
+def instructions():
+    return render_template('instructions.html')
 
 #TODO: update for key result
 # TODO: update for tasks
