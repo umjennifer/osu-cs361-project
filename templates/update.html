@@ -8,7 +8,7 @@
 <div class="content">
 
     <form action="/update/objective/{{ objective.id }}" method="POST">
-        <input type="text" name="content" id="content" value="{{objective.content}}">
+        <input type="text" name="content" id="content" value="{{objective.content}}" required>
         <input type="submit" value="Update objective">
     </form>
 </div>

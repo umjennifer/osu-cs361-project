@@ -48,3 +48,7 @@ td {
     text-decoration: none; 
     transition: color 0.30s ease-in-out,opacity 0.30s ease-in-out;
 }
+
+.btn-group {
+    font-size: 12px; /*or whatever size */
+  }

@@ -1,11 +1,29 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 style="text-align: center;">Objective Tracker</h1>
+<h1 style="text-align: center;">Goal Tracker</h1>
 {% endblock %}
 
 {% block body %}
-  
+
+
+  {% if show_tips %}
+    <form action="/tips/hide" method="POST">
+      <input type="hidden" name="tips_hide" id="tips_hide" value="false">
+      <input type="submit" value="Hide Tips">
+    </form>
+  {% else %}
+    <form action="/tips/show" method="POST">
+      <input type="hidden" name="tips_show" id="tips_show" value="true">
+      <input type="submit" value="Show Tips">
+    </form>
+  {% endif %}
+
+  <br>
+
+
+
+
 
   {% if objectives|length < 1%}
       There are no objectives create one below.<br>
@@ -24,7 +42,11 @@
                   <div id="panelsStayOpen-collapseobjective-{{objective.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingobjective-{{objective.id}}">
                     <div class="accordion-body">
 
-                      <a href="/update/objective/{{objective.id}}">Update Objective</a> | <a href="/delete/objective/{{objective.id}}">Delete Objective</a><br><br>
+                      <a href="/update/objective/{{objective.id}}" style="color:silver">Update Objective</a>
+                      <span style="color:silver"> | </span>
+                      <a href="/delete/objective/{{objective.id}}" style="color:silver">Delete Objective</a><br><br>
+
+                      
                       {% if objective.key_results|length < 1%}
                           There are no key results.
                       {% else %}
@@ -41,7 +63,10 @@
                                   <div id="panelsStayOpen-collapsekr-{{kr.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingkr-{{kr.id}}">
                                   <div class="accordion-body">
 
-                                      <a href="/update/key_result/{{kr.id}}">Update Key Result</a> | <a href="/delete/key_result/{{kr.id}}">Delete Key Result</a><br><br>
+                                      <a href="/update/key_result/{{kr.id}}" style="color:silver">Update Key Result</a> 
+                                      <span style="color:silver"> | </span>
+                                      <a href="/delete/key_result/{{kr.id}}" style="color:silver">Delete Key Result</a><br><br>
+
                                       {% if kr.tasks|length < 1%}
                                           There are no tasks.<br>
                                       {% else %}
@@ -57,7 +82,11 @@
                                                   </h2>
                                                   <div id="panelsStayOpen-collapse-task{{task.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading-task{{task.id}}">
                                                   <div class="accordion-body">
-                                                      <a href="/update/task/{{task.id}}">Update Task</a> | <a href="/delete/task/{{task.id}}">Delete Task</a>
+
+                                                      <a href="/update/task/{{task.id}}" style="color:silver">Update Task</a>
+                                                      <span style="color:silver"> | </span>
+                                                      <a href="/delete/task/{{task.id}}" style="color:silver">Delete Task</a>
+
                                                   </div>
                                                   </div>
                                               </div>
@@ -65,11 +94,16 @@
                                           {% endfor %}
                                       {% endif %}
                                           <form action="/create/task" method="POST">
-                                              <input type="text" name="task_content" id="task_content">
+                                              <input type="text" name="task_content" id="task_content" required>
                                               <input type="hidden" name="key_result_id" value="{{kr.id}}">
                                               <input type="submit" value="Add task">
                                           </form>
 
+                                          {% if show_tips %}
+                                          <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="A task is a tangible, quantifiable TODO to acheive a key result. For example, for the 'gain 5% muscle mass' key result, tasks can include: 'exercise daily', 'get 2x physicals twice a year', etc.">
+                                            What is a task?
+                                          </button>
+                                          {% endif %}
 
                                   </div>
                                   </div>
@@ -78,10 +112,16 @@
                       
                       {% endif %}
                       <form action="/create/key_result" method="POST">
-                          <input type="text" name="key_result_content" id="key_result_content">
+                          <input type="text" name="key_result_content" id="key_result_content" required>
                           <input type="hidden" name="objective_id" value="{{objective.id}}">
                           <input type="submit" value="Add key result">
                       </form>
+
+                      {% if show_tips %}
+                      <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="A key result is measurable success criteria used to track the achievement of that goal. For example for a 'be healthier' objective, key results can include 'gain 5% muscle mass'">
+                        What is a key result?
+                      </button>
+                      {% endif %}
 
                     </div>
                   </div>
@@ -90,8 +130,22 @@
 
       {% endfor %}
   {% endif %}
+  <br>
   <form action="/create/objective" method="POST">
-      <input type="text" name="objective_content" id="objective_content">
+      <input type="text" name="objective_content" id="objective_content" required>
       <input type="submit" value="Add objective">
-  </form>
+  </form> 
+
+  {% if show_tips %}
+    <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="An objective is a significant, concrete, clearly defined goal. For example:'be healthier'">What is an objective?</button>
+  {% endif %}
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+          $('[data-toggle="popover"]').popover()
+        })
+    </script>
 {% endblock %}
