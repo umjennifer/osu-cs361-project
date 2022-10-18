@@ -10,10 +10,64 @@
 
     <h2>Deleted Objectives</h2>
 
+    <table>
+        <tr>
+            <th>Objective</th>
+            <th>Key Results</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for deleted_objective in deleted_objectives %}
+            <tr>
+                <td>{{ deleted_objective.content }}</td>
+                <td>{{ deleted_objectives.key_results }}</td>
+
+                <td>
+                    <a href="/recover/objective/{{deleted_objective.id}}">Recover</a>
+                </td>
+        </tr>
+        {% endfor %}
+    </table>
+
     <h2>Deleted Key Results</h2>
+    <table>
+        <tr>
+            <th>Key Result</th>
+            <th>Tasks</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for deleted_key_result in deleted_key_results %}
+            <tr>
+                <td>{{ deleted_key_result.content }}</td>
+                <td>{{ deleted_key_result.tasks }}</td>
+
+                <td>
+                    <a href="/recover/key_result/{{deleted_key_result.id}}">Recover</a>
+                </td>
+        </tr>
+        {% endfor %}
+    </table>
 
     <h2>Deleted Tasks</h2>
+    <table>
+        <tr>
+            <th>Task</th>
+            <th>Key Result ID</th>
+            <th>Actions</th>
+        </tr>
 
+        {% for deleted_task in deleted_tasks %}
+            <tr>
+                <td>{{ deleted_task.content }}</td>
+                <td>{{ deleted_task.key_result_id }}</td>
+
+                <td>
+                    <a href="/recover/task/{{deleted_task.id}}">Recover</a>
+                </td>
+        </tr>
+        {% endfor %}
+    </table>
 
 
 

@@ -5,7 +5,7 @@ import time
 from datetime import date
 
 
-new_feature = True
+new_feature = False
 show_tips = False
 
 app = Flask(__name__)
@@ -37,6 +37,7 @@ class Task(db.Model):
 
 class Deleted_Objective(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    id_of_deleted_objective = db.Column(db.Integer)
     content = db.Column(db.String(200), nullable=False)
     key_results = db.relationship('Deleted_Key_Result', backref='objective', cascade="all, delete-orphan")
 
@@ -45,6 +46,7 @@ class Deleted_Objective(db.Model):
 
 class Deleted_Key_Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    id_of_deleted_key_result = db.Column(db.Integer)
     content = db.Column(db.String(200), nullable=False)
     objective_id = db.Column(db.Integer, db.ForeignKey('deleted__objective.id'))  # TODO: set as can't be null
     tasks = db.relationship('Deleted_Task', backref='key_result', cascade="all, delete-orphan")
@@ -52,6 +54,7 @@ class Deleted_Key_Result(db.Model):
 
 class Deleted_Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    id_of_deleted_task = db.Column(db.Integer)
     content = db.Column(db.String(200), nullable=False)
     key_result_id = db.Column(db.Integer, db.ForeignKey('deleted__key__result.id'))  # TODO: set as can't be null
      # TODO: cascade delete
@@ -138,12 +141,12 @@ def tips_hide():
 @app.route('/delete/objective/<int:id>')
 def delete_objective(id):
     objective_to_delete = Objective.query.get_or_404(id)
+    new_deleted_objective = Deleted_Objective(content=objective_to_delete.content, id_of_deleted_objective=id)
     try:
         db.session.delete(objective_to_delete)
-        print("objective_to_delete=", objective_to_delete)
-
-        # add the item to the recently deleted
         
+        # add the item to the recently deleted
+        db.session.add(new_deleted_objective)
 
         db.session.commit()
         return redirect('/')
@@ -153,8 +156,10 @@ def delete_objective(id):
 @app.route('/delete/key_result/<int:id>')
 def delete_key_result(id):
     key_result_to_delete = Key_Result.query.get_or_404(id)
+    new_deleted_key_result = Deleted_Key_Result(content=key_result_to_delete.content, id_of_deleted_key_result=id, objective_id=key_result_to_delete.objective_id)
     try:
         db.session.delete(key_result_to_delete)
+        db.session.add(new_deleted_key_result)
         db.session.commit()
         return redirect('/')
     except:
@@ -163,8 +168,10 @@ def delete_key_result(id):
 @app.route('/delete/task/<int:id>')
 def delete_task(id):
     task_to_delete = Task.query.get_or_404(id)
+    new_deleted_task = Deleted_Task(content=task_to_delete.content, id_of_deleted_task=id, key_result_id=task_to_delete.key_result_id)
     try:
         db.session.delete(task_to_delete)
+        db.session.add(new_deleted_task)
         db.session.commit()
         return redirect('/')
     except:
@@ -198,7 +205,10 @@ def instructions():
 
 @app.route('/recently-deleted', methods=['GET'])
 def recently_deleted():
-    return render_template('recently-deleted.html')
+    deleted_objectives = Deleted_Objective.query.order_by(Deleted_Objective.id).all()
+    deleted_key_results = Deleted_Key_Result.query.order_by(Deleted_Key_Result.id).all()
+    deleted_tasks = Deleted_Task.query.order_by(Deleted_Task.id).all()
+    return render_template('recently-deleted.html', deleted_objectives=deleted_objectives, deleted_key_results=deleted_key_results, deleted_tasks=deleted_tasks)
 
 # @app.teardown_request
 # def teardown_request(exception=None):
