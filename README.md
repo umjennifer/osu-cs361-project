@@ -22,6 +22,8 @@ This tracker solves that issue by breaking down each goal (referred to as an *ob
 
 ## Example of an OKR with Tasks
 
+### Example
+
 - **Objective**: Post more vlogs on YouTube (October 2022 - November 2022)
     - **Key Result**: Post one video per week for 4 weeks
         - **Task**: Brainstorm ideas
@@ -38,6 +40,12 @@ This tracker solves that issue by breaking down each goal (referred to as an *ob
         - **Task**: Create and publish profile pic
    - **Key Result**: Research and document trends
         - **Task**: Look up viral videos 1x/week
+
+### UI Example
+Screenshots from v1.0. Note that an objective is listed in an accordian, which contains accordians for each associated key result. Each associated key result contains accordians for each associated task.
+![Objective Example](/README-images/objective.png)
+![Key Results Example](/README-images/key-result.png)
+![Tasks Example](/README-images/tasks.png)
 
 ## Demo Instructions
 
