@@ -1,9 +1,15 @@
 # Goal Tracker
 
-## About
-A goal tracker that uses objectives, key results, and tasks to keep you accountable. Tasks are numeric or boolean. Tasks can be configured at different recurrences; daily, weekly, one-time, etc.
+**A goal tracker that uses objectives, key results, and tasks to keep you accountable. Tasks are numeric or boolean. Tasks can be configured at different recurrences; daily, weekly, one-time, etc.**
 
 [*More information about objective and key result (OKR)*](https://en.wikipedia.org/wiki/OKR)
+
+## About
+I used to set goals for myself at the start of the year (ex: *create a personal software project, watch all 1000+ episodes of the One Piece anime, etc.*) but by the time June would come around, I'd look at my list of goals and realize I had forgotten about them completely. 
+
+This tracker solves that issue by breaking down each goal (referred to as an *objective*) into measurable, success criteria(s) (referred to as a *key result`*), then breaking down those key results into various tasks (recurring, or one-time only).
+
+Each day, a user can log in to review and check off their tasks for the day, week, etc. With this, the user will have a daily reminder of what they're working towards.
 
 ## Definitions
 
@@ -13,6 +19,25 @@ A goal tracker that uses objectives, key results, and tasks to keep you accounta
     - A measurable success criteria used to track attainment of an objective. There can be many key results associated with one objective.
 - *Task*
     - A concrete activity that needs to be accomplished to track attainment of a key result. There can be many tasks associated with one key result.
+
+## Example of an OKR with Tasks
+
+- **Objective**: Post more vlogs on YouTube (October 2022 - November 2022)
+    - **Key Result**: Post one video per week for 4 weeks
+        - **Task**: Brainstorm ideas
+        - **Task**: Finalize ideas
+        - **Task**: Schedule time for recording
+        - **Task**: Schedule time for editing
+        - **Task**: Create publishing schedule
+        - **Task**: Edit video 1x/week
+        - **Task**: Publish video 1x/week
+    - **Key Result**: Create a YouTube thumbnail
+        - **Task**: Spike Test Canva
+        - **Task**: Spike Test Procreate
+        - **Task**: Research popular thumbnails
+        - **Task**: Create and publish thumbnail
+   - **Key Result**: Research and document trends
+        - **Task**: Look up viral videos 1x/week
 
 ## Demo Instructions
 
