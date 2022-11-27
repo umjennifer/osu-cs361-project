@@ -284,10 +284,34 @@ def create_events(task_id, start_date, end_date, cadence):
         weekly_events = [i.strftime('%Y-%m-%d') for i in weekly_events_metadata]
         print("weekly_events={}".format(weekly_events))
     elif cadence == "monthly":
-        weekly_events_metadata = pandas.date_range(start_date,end_date, freq='W')
-        weekly_events = [i.strftime('%Y-%m-%d') for i in weekly_events_metadata]
-        print("weekly_events={}".format(weekly_events))
+        monthly_events_metadata = month_range_day(start_date, num_months_between_two_dates(start_date, end_date))
+        print("monthly_events_metadata={}".format(monthly_events_metadata))
+    else:  # cadence == "yearly"
+        yearly_events_metadata = pandas.date_range(
+            start=start_date, 
+            periods=(
+                (num_months_between_two_dates(start_date, end_date) // 12) + 1
+                ), 
+            freq=pandas.DateOffset(years=1)
+            )
+        print("yearly_events_metadata = {}".format(yearly_events_metadata))
 
+# Citation: https://stackoverflow.com/a/4040338 
+def num_months_between_two_dates(date1, date2):
+    date1 = string_to_datetime(date1)
+    date2 = string_to_datetime(date2)
+    print("num_months_between_two_dates={}".format((date1.year - date2.year) * 12 + date1.month - date2.month))
+    return abs((date1.year - date2.year) * 12 + date1.month - date2.month) + 1 # add one to include date
+
+# Citation: https://stackoverflow.com/a/51881983
+def month_range_day(start, periods):
+    print("start={}".format(start))
+    print("periods={}".format(periods))
+    start_date = pandas.Timestamp(start).date()
+    month_range = pandas.date_range(start=start_date, periods=periods, freq='M')
+    month_day = month_range.day.values
+    month_day[start_date.day < month_day] = start_date.day
+    return pandas.to_datetime(month_range.year*10000+month_range.month*100+month_day, format='%Y%m%d')
 
 @app.route('/changelog', methods=['GET'])
 def changelog():
