@@ -1,8 +1,8 @@
 # Goal Tracker
 
-**A goal tracker that uses objectives, key results, and tasks to keep you accountable. Tasks are numeric or boolean. Tasks can be configured at different recurrences; daily, weekly, one-time, etc.
+A goal tracker that uses objectives, key results, and tasks to keep you accountable. Tasks are numeric or boolean. Tasks can be configured at different recurrences; daily, weekly, one-time, etc.
 
-Each day, a user can log in to review and check off their tasks for the day, week, etc. With this, the user will have a daily reminder of what they're working towards.**
+Each day, a user can log in to review and check off their tasks for the day, week, etc. With this, the user will have a daily reminder of what they're working towards.
 
 [*More information about objective and key result (OKR)*](https://en.wikipedia.org/wiki/OKR)
 
