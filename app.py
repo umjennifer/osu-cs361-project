@@ -273,6 +273,7 @@ def string_to_datetime(date_str):
     return d.date()
 
 def create_events(task_id, start_date, end_date, cadence):
+    # TODO: finish this
     print("cadence={}".format(cadence))
     if cadence == "daily":
         daily_events_metadata = pandas.date_range(start_date,end_date)
