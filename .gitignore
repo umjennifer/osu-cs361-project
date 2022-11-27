@@ -2,3 +2,5 @@
 /.vscode
 /__pycache__
 /instance
+.DS_Store
+responsiveness.log
