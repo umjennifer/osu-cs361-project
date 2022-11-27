@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h1 style="text-align: center;">Update key_results</h1>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+
+    <form action="/update/key_result/{{ key_result.id }}" method="POST">
+        <input type="text" name="content" id="content" value="{{key_result.content}}" required>
+        <input type="submit" value="Update key_result">
+    </form>
+</div>
+{% endblock %}

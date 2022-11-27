@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h1 style="text-align: center;"> {{task.content}} </h1>
+{% endblock %}
+
+{% block body %}
+
+<div class="content, pull-left">
+    <p>
+        <h2>Name</h2>
+        <form action="/update/task/{{ task.id }}" method="POST">
+            <input type="text" name="content" id="content" value="{{task.content}}" required>
+            <input type="submit" value="Update task name">
+        </form>
+    </p>
+
+    <h2>Recurrence</h2>
+    <form action="/task/{{ task.id }}/recurrence" method="POST" onsubmit="return confirm('Are you sure you want to update this?');">
+     
+        <input type="radio" id="one_time" name="is_recurring" value="false" required>
+        <label for="one_time" required>
+            Once on
+            <input type="date" id="one_time_date" name="one_time_date" value="{{ today }}">
+        </label><br>
+        <input type="radio" id="recurring" name="is_recurring" value="true" required>
+        <label for="recurring">
+            Recurring 
+            <select name="recurrence_cadence" id="recurrence_cadence">
+                <option value="daily">daily</option>
+                <option value="weekly">weekly</option>
+                <option value="monthly">monthly</option>
+                <option value="yearly">yearly</option>
+              </select>
+             from 
+            <input type="date" id="start_date" name="start_date" value="{{ today }}">
+             to 
+            <input type="date" id="end_date" name="end_date" value="{{ today }}">
+
+        </label><br>  
+        <input type="submit" value="Submit">
+    </form>
+
+</div>
+{% endblock %}

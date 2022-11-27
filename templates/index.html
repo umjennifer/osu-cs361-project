@@ -6,6 +6,7 @@
 
 {% block body %}
 
+  <p style="text-align: center;"><em>{{ random_quote }}</em></p>
 
   {% if show_tips %}
     <form action="/tips/hide" method="POST">
@@ -29,7 +30,7 @@
       There are no objectives create one below.<br>
   {% else %}
       {% for objective in objectives %}
-          <div class="accordion" id="{{objective.id}}_accordian">
+          <div class="accordion" id="{{objective.id}}_accordion">
               <div class="accordion-item">
                   <h2 class="accordion-header" id="panelsStayOpen-objective-{{objective.id}}">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseobjective-{{objective.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapseobjective-{{objective.id}}">
