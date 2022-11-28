@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <h1 style="text-align: center;">Tasks for {{ day_of_week }}, {{ desired_date }}</h1>
+
+{% endblock %}
+
+{% block body %}
+    {% if events_tasks_kr_objectives|length < 1%}
+        There are no tasks for this day.
+    {% else %}
+
+        {% for event, task, key_result, objective in events_tasks_kr_objectives %}
+        <div class="accordion" id="{{task.id}}_accordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-task-{{task.id}}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsetask-{{task.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapsetask-{{task.id}}">
+
+                        {% if event.done == false %}
+                          <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                          <span class="tab-10px">{{task.content}}</span>
+                        {% else %}
+                            <span class="badge rounded-pill text-bg-success">Done</span>
+                            <span class="tab-10px"><del>{{task.content}}</del></span>
+                        {% endif %}
+                        
+
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapsetask-{{task.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingtask-{{task.id}}">
+                    <div class="accordion-body">
+                        {% if event.done == false %}
+                            <form action="/task/done" method="POST">
+                                <input type="hidden" name="task_id" value="{{task.id}}">
+                                <input type="hidden" name="event_id" value="{{event.id}}">
+                                <button type="submit" class="btn btn-outline-success btn-sm py-0" style="font-size: 0.8em;">
+                                    Mark as done
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="/task/not-done" method="POST">
+                                <input type="hidden" name="task_id" value="{{task.id}}">
+                                <input type="hidden" name="event_id" value="{{event.id}}">
+                                <button type="submit" class="btn btn-outline-primary btn-sm py-0" style="font-size: 0.8em;">
+                                    Mark as not done
+                                <!-- <input type="submit" value="Mark as not done"> -->
+                                </button>
+                            </form>
+                            
+                        {% endif %}
+
+                        <ul>
+                            <li>
+                                Associated with
+                                <span class="badge text-bg-light">Objective</span>
+                                <span class="tab-1px">{{objective.content}}</span>
+                                :
+                                <span class="badge text-bg-secondary">Key Result</span>
+                                <span class="tab-1px">{{key_result.content}}</span>
+                            </li>
+                            <li>
+                                {% if task.startdate is none %}
+                                    No recurrence; <a href="/update/task/{{task.id}}">set a recurrence.</a><br>
+                                {% else %}
+                                    Recurrence: 
+                                    {% if task.cadence is none %}
+                                    one-time on {{ task.startdate }}.
+                                    {% else %}
+                                    {{ task.cadence }} from {{ task.startdate }} to {{ task.enddate }}.
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                        </ul>                     
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div id="textbox">
+        <p class="alignleft"><a href="/tasks/date/{{previous_date}}"><<< Previous Date</a></p>
+        <p class="alignright"><a href="/tasks/date/{{next_date}}">Next Date >>></a></p>
+    </div>
+    <div style="clear: both;"></div>
+
+    <div style="text-align: center;">
+        <p>
+          <label for="start">Change date:</label>
+          <form action="/select-date" method="POST"> 
+            <input type="date" id="selected_date" name="selected_date" value="{{ desired_date }}">
+            <input type="submit" value="Submit">
+          </form>
+        </p>
+      </div>
+
+
+
+      
+{% endblock %}

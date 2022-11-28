@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <h1 style="text-align: center;">Tasks for {{ day_of_week }}, {{ desired_date }}</h1>
+
+{% endblock %}
+
+{% block body %}
+    {% if tasks|length < 1%}
+        There are no tasks for this day.
+    {% else %}
+        {% for event, task, key_result, objective in events_tasks_kr_objectives %}
+            <div class="accordion" id="{{task.id}}_accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="panelsStayOpen-task-{{task.id}}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsetask-{{task.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapsetask-{{task.id}}">
+    
+                          <span class="tab-10px">{{task.content}}</span>
+                          <span class="tab-10px"><a href="/">Mark as done for the day</a></span>
+    
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapsetask-{{task.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingtask-{{task.id}}">
+                        <div class="accordion-body">
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="- Associated with<br>">
+                                Info
+                            </button>
+                            <p>
+                            Associated with
+                            <span class="badge text-bg-light">Objective</span>
+                            <span class="tab-1px">{{objective.content}}</span>
+                            :
+                            <span class="badge text-bg-secondary">Key Result</span>
+                            <span class="tab-1px">{{key_result.content}}</span>
+                            <br>
+                            {% if task.startdate is none %}
+                                No recurrence; <a href="/update/task/{{task.id}}">set a recurrence.</a><br>
+                            {% else %}
+                                Recurrence: 
+                                {% if task.cadence is none %}
+                                one-time on {{ task.startdate }}.
+                                {% else %}
+                                {{ task.cadence }} from {{ task.startdate }} to {{ task.enddate }}.
+                                {% endif %}
+                            {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        {% endfor %}
+
+
+
+    {% endif %}
+    <div style="text-align: center;">
+        <p>
+            <label for="start">Change date:</label>
+            <form action="/select-date" method="POST"> 
+            <input type="date" id="selected_date" name="selected_date" value="{{ today }}">
+            <input type="submit" value="Submit">
+            </form>
+        </p>
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        $(function () {
+          $('[data-toggle="popover"]').popover()
+        })
+    </script>
+{% endblock %}

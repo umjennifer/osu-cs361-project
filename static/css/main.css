@@ -52,3 +52,14 @@ td {
 .btn-group {
     font-size: 12px; /*or whatever size */
   }
+
+.alignleft {
+	float: left;
+}
+.alignright {
+	float: right;
+}
+
+.btn-link, .btn-link:hover, .btn-link:active, .btn-link:visited {
+    color: silver !important;
+}

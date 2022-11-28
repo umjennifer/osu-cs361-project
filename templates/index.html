@@ -6,7 +6,16 @@
 
 {% block body %}
 
-  <p style="text-align: center;"><em>{{ random_quote }}</em></p>
+  <div style="text-align: center;">
+    <p><em>{{ random_quote }}</em></p>
+    <p>
+      <label for="start">Select a date to view the tasks for that date:</label>
+      <form action="/select-date" method="POST"> 
+        <input type="date" id="selected_date" name="selected_date" value="{{ today }}">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+  </div>
 
   {% if show_tips %}
     <form action="/tips/hide" method="POST">
@@ -19,12 +28,7 @@
       <input type="submit" value="Show Tips">
     </form>
   {% endif %}
-
   <br>
-
-
-
-
 
   {% if objectives|length < 1%}
       There are no objectives create one below.<br>
@@ -36,17 +40,32 @@
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseobjective-{{objective.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapseobjective-{{objective.id}}">
 
                       <span class="badge text-bg-light">Objective</span>
-                      <span class="tab-10px">{{objective.content}}</span>
+                      {% if objective.done == false %}
+                        <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                        <span class="tab-10px">{{objective.content}}</span>
+                      {% else %}
+                          <span class="badge rounded-pill text-bg-success">Done</span>
+                          <span class="tab-10px"><del>{{objective.content}}</del></span>
+                      {% endif %}
 
                     </button>
                   </h2>
                   <div id="panelsStayOpen-collapseobjective-{{objective.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingobjective-{{objective.id}}">
                     <div class="accordion-body">
 
-                      <a href="/update/objective/{{objective.id}}" style="color:silver">Update Objective</a>
-                      <span style="color:silver"> | </span>
-                      <a href="/delete/objective/{{objective.id}}" style="color:silver">Delete Objective</a><br><br>
-
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                          <form action="/update/objective/{{objective.id}}" method="GET">
+                            <button type="submit" class="btn btn-link btn-sm">
+                              Update Objective
+                            </button> 
+                          </form>
+                          <form action="/delete/objective/{{objective.id}}" method="GET" onsubmit="return confirm('Deleting this objective will delete all associated key results and tasks. Click OK to continue, otherwise click cancel.');">
+                            <button type="submit" class="btn btn-link btn-sm">
+                              Delete Objective
+                            </button> 
+                          </form>
+                        </div>
+                      <br><br>
                       
                       {% if objective.key_results|length < 1%}
                           There are no key results.
@@ -57,16 +76,32 @@
                                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsekr-{{kr.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapsekr-{{kr.id}}">
 
                                     <span class="badge text-bg-secondary">Key Result</span>
-                                    <span class="tab-10px">{{kr.content}}</span>
+                                    {% if kr.done == false %}
+                                      <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                                      <span class="tab-10px">{{kr.content}}</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill text-bg-success">Done</span>
+                                        <span class="tab-10px"><del>{{kr.content}}</del></span>
+                                    {% endif %}
 
                                   </button>
                                   </h2>
                                   <div id="panelsStayOpen-collapsekr-{{kr.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingkr-{{kr.id}}">
                                   <div class="accordion-body">
 
-                                      <a href="/update/key_result/{{kr.id}}" style="color:silver">Update Key Result</a> 
-                                      <span style="color:silver"> | </span>
-                                      <a href="/delete/key_result/{{kr.id}}" style="color:silver">Delete Key Result</a><br><br>
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                      <form action="/update/key_result/{{kr.id}}" method="GET">
+                                        <button type="submit" class="btn btn-link btn-sm">
+                                          Update Key Result
+                                        </button> 
+                                      </form>
+                                      <form action="/delete/key_result/{{kr.id}}" method="GET" onsubmit="return confirm('Deleting this objective will delete all associated key results and tasks. Click OK to continue, otherwise click cancel.');">
+                                        <button type="submit" class="btn btn-link btn-sm">
+                                          Delete Key Result
+                                        </button> 
+                                      </form>
+                                    </div>
+                                    <br><br>
 
                                       {% if kr.tasks|length < 1%}
                                           There are no tasks.<br>
@@ -75,18 +110,57 @@
                                               <div class="accordion-item">
                                                   <h2 class="accordion-header" id="panelsStayOpen-heading-task{{task.id}}">
                                                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse-task{{task.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapse-task{{task.id}}">
+                                                    
+                                                    {% if task.startdate is none %}
+                                                    <span class="badge text-bg-danger">Task (Action Required: Set Recurrence)</span>
+                                                    {% else %}
+                                                      {% if task.cadence is none %}
+                                                        <span class="badge text-bg-dark">Task (One-Time)</span>
+                                                      {% else %}
+                                                        <span class="badge text-bg-dark">Task (Recurring)</span>
+                                                      {% endif %}
+                                                    {% endif %}
 
-                                                    <span class="badge text-bg-dark">Task</span>
-                                                    <span class="tab-10px">{{task.content}}</span>
+                                                    {% if task.done == false %}
+                                                      <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                                                      <span class="tab-10px">{{task.content}}</span>
+                                                    {% else %}
+                                                        <span class="badge rounded-pill text-bg-success">Done</span>
+                                                        <span class="tab-10px"><del>{{task.content}}</del></span>
+                                                    {% endif %}
+                                                    
+                                                    <!-- <span class="tab-10px">{{task.content}}</span> -->
 
                                                   </button>
                                                   </h2>
                                                   <div id="panelsStayOpen-collapse-task{{task.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading-task{{task.id}}">
                                                   <div class="accordion-body">
 
-                                                      <a href="/update/task/{{task.id}}" style="color:silver">Update Task</a>
-                                                      <span style="color:silver"> | </span>
-                                                      <a href="/delete/task/{{task.id}}" style="color:silver">Delete Task</a>
+                                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                                      <form action="/update/task/{{task.id}}" method="GET">
+                                                        <button type="submit" class="btn btn-link btn-sm">
+                                                          Update Task
+                                                        </button> 
+                                                      </form>
+                                                      <form action="/delete/task/{{task.id}}" method="GET" onsubmit="return confirm('This action cannot be undone. Click OK to continue, otherselect click cancel.');">
+                                                        <button type="submit" class="btn btn-link btn-sm">
+                                                          Delete Task
+                                                        </button> 
+                                                      </form>
+                                                    </div>
+
+                                                      <p>
+                                                        {% if task.startdate is none %}
+                                                          No recurrence; <a href="/update/task/{{task.id}}">set a recurrence.</a><br>
+                                                        {% else %}
+                                                          Recurrence: 
+                                                          {% if task.cadence is none %}
+                                                            one-time on <a href="/tasks/date/{{ task.startdate }}">{{ task.startdate }}</a>.
+                                                          {% else %}
+                                                            {{ task.cadence }} from {{ task.startdate }} to {{ task.enddate }}.
+                                                          {% endif %}
+                                                        {% endif %}
+                                                      </p>
 
                                                   </div>
                                                   </div>

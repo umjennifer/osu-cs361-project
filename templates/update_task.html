@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+<a href="/"><p style="text-align:center">Go back</p></a>
 
 <div class="content, pull-left">
     <p>
@@ -16,8 +17,18 @@
     </p>
 
     <h2>Recurrence</h2>
-    <form action="/task/{{ task.id }}/recurrence" method="POST" onsubmit="return confirm('Are you sure you want to update this?');">
-     
+
+    {% if task.startdate is none %}
+        Set a recurrence.
+        <form action="/task/{{ task.id }}/recurrence" method="POST"> 
+    {% else %}
+        Update the recurrence.
+        <div class="alert alert-danger" role="alert">
+            This will delete all events created previously for this task and cannot be undone.
+        </div>
+        <form action="/task/{{ task.id }}/recurrence" method="POST" onsubmit="return confirm('Updating the recurrence will delete all previous events for this task. Are you sure?');"> 
+    {% endif %}
+
         <input type="radio" id="one_time" name="is_recurring" value="false" required>
         <label for="one_time" required>
             Once on
