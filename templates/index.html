@@ -39,14 +39,17 @@
                   <h2 class="accordion-header" id="panelsStayOpen-objective-{{objective.id}}">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseobjective-{{objective.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapseobjective-{{objective.id}}">
 
-                      <span class="badge text-bg-light">Objective</span>
-                      {% if objective.done == false %}
-                        <span class="badge rounded-pill text-bg-primary">Not Done</span>
-                        <span class="tab-10px">{{objective.content}}</span>
+                      {% if objective.done == false and objective.count_events_not_done == 0 %}
+                       <span class="badge text-bg-danger">Objective (Action Required: Expand sections to see action required.)</span>
+                      {% elif objective.done == false %}
+                        <span class="badge text-bg-light">Objective</span>
+                          <span class="badge rounded-pill text-bg-primary"> {{ objective.count_total_events -  objective.count_events_not_done}} / {{ objective.count_total_events }} Total Tasks Completed</span>
+                          <span class="tab-10px">{{objective.content}}</span>
                       {% else %}
                           <span class="badge rounded-pill text-bg-success">Done</span>
                           <span class="tab-10px"><del>{{objective.content}}</del></span>
                       {% endif %}
+                        <span class="tab-10px">{{objective.content}}</span>
 
                     </button>
                   </h2>
@@ -65,7 +68,7 @@
                             </button> 
                           </form>
                         </div>
-                      <br><br>
+
                       
                       {% if objective.key_results|length < 1%}
                           There are no key results.
@@ -74,10 +77,15 @@
                               <div class="accordion-item">
                                   <h2 class="accordion-header" id="panelsStayOpen-kr-{{kr.id}}">
                                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsekr-{{kr.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapsekr-{{kr.id}}">
+                                    {% if kr.tasks|length < 1%}
+                                      <span class="badge text-bg-danger">Key Result (Action Required: Create an associated task)</span>
+                                    {% else %}
+                                      <span class="badge text-bg-secondary">Key Result</span>
+                                    {% endif %}
 
-                                    <span class="badge text-bg-secondary">Key Result</span>
+
                                     {% if kr.done == false %}
-                                      <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                                      <span class="badge rounded-pill text-bg-primary">{{ kr.count_total_events -  kr.count_events_not_done}} / {{ kr.count_total_events }} Total Tasks Completed</span>
                                       <span class="tab-10px">{{kr.content}}</span>
                                     {% else %}
                                         <span class="badge rounded-pill text-bg-success">Done</span>
@@ -101,7 +109,6 @@
                                         </button> 
                                       </form>
                                     </div>
-                                    <br><br>
 
                                       {% if kr.tasks|length < 1%}
                                           There are no tasks.<br>
@@ -122,7 +129,7 @@
                                                     {% endif %}
 
                                                     {% if task.done == false %}
-                                                      <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                                                      <span class="badge rounded-pill text-bg-primary">{{ task.count_total_events -  task.count_events_not_done}} / {{ task.count_total_events }} Total Tasks Completed</span>
                                                       <span class="tab-10px">{{task.content}}</span>
                                                     {% else %}
                                                         <span class="badge rounded-pill text-bg-success">Done</span>
@@ -156,8 +163,39 @@
                                                           Recurrence: 
                                                           {% if task.cadence is none %}
                                                             one-time on <a href="/tasks/date/{{ task.startdate }}">{{ task.startdate }}</a>.
+                                                            <ul>
+                                                              {% for event in events %}
+                                                                {% if event.task_id == task.id %}
+                                                                  <li> 
+                                                                    {% if event.done == false %}
+                                                                    <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                                                                    {% else %}
+                                                                      <span class="badge rounded-pill text-bg-success">Done</span>
+                                                                    {% endif %}
+                                                                    <a href="/tasks/date/{{ event.date }}">{{ event.date }}</a>
+                                                                  </li>
+                                                                {% else %}
+                                                                {% endif %}
+                                                              {% endfor %}
+                                                            </ul>
                                                           {% else %}
                                                             {{ task.cadence }} from {{ task.startdate }} to {{ task.enddate }}.
+                                                            <ul>
+                                                            {% for event in events %}
+                                                              {% if event.task_id == task.id %}
+                                                                <li> 
+                                                                  {% if event.done == false %}
+                                                                  <span class="badge rounded-pill text-bg-primary">Not Done</span>
+                                                                  {% else %}
+                                                                    <span class="badge rounded-pill text-bg-success">Done</span>
+                                                                  {% endif %}
+                                                                  <a href="/tasks/date/{{ event.date }}">{{ event.date }}</a>
+                                                                </li>
+                                                              {% else %}
+                                                              {% endif %}
+                                                            {% endfor %}
+                                                            </ul>
+
                                                           {% endif %}
                                                         {% endif %}
                                                       </p>

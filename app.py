@@ -116,15 +116,21 @@ def logging_after(response):
 @app.route('/', methods=['GET'])
 def index():
     random_quote = get_random_quote()
-
     if new_feature is True:
         flash('New feature: You can now use a date picker to add a due date to a task. Read the Changelog for more information and instructions.') 
     objectives = Objective.query.order_by(Objective.id).all()
+    events = Event.query.order_by(Event.task_id).all()
 
-    for objective in objectives:
-        get_fraction_not_done_events_from_objective(objective)
+    # for objective in objectives:
+    #     get_fraction_not_done_events_from_objective(objective)
 
-    return render_template('index.html', objectives=objectives, show_tips=show_tips, random_quote=random_quote, today=date.today())
+    return render_template(
+        'index.html', 
+        objectives=objectives, 
+        events=events,
+        show_tips=show_tips, 
+        random_quote=random_quote, 
+        today=date.today())
 
 @app.route('/select-date', methods=['POST'])
 def select_date():
@@ -163,10 +169,18 @@ def create_key_result():
     try:
         db.session.add(new_key_result)
         db.session.commit()
-
-        return redirect('/')
     except:
         return 'There was an issue adding your key result'
+    objective = Objective.query.get_or_404(objective_id)
+    objective.done = check_if_all_key_results_for_objective_are_done(objective)
+    try:
+        db.session.commit()
+    except:
+        return 'There was an issue updating done status of objective'
+
+    return redirect('/')
+    
+    
 
 @app.route('/create/task', methods=['POST'])
 def create_task():
@@ -346,6 +360,9 @@ def add_event_to_table(task_id, event_date_string):
         db.session.commit()
     except:
         return 'There was an issue adding an event on the day specified'
+    update_done_status_of_task(task)
+    update_done_status_of_key_result(key_result)
+    update_done_status_of_objective(objective)
 
     
 
@@ -419,46 +436,49 @@ def recently_deleted():
 def mark_task_as_done():
     task = Task.query.get_or_404(request.form['task_id']) 
     event = Event.query.get_or_404(request.form['event_id']) 
-    print("task_id={}".format(task.id))
-    print("event_id={}".format(event.id))
+    print("in done")
+    print("\ttask_id={}".format(task.id))
+    print("\tevent_id={}".format(event.id))
 
     event.done = True
     try:
         db.session.commit()
     except:
         return "error marking the task for the day as done"
-
-    all_events_done = check_if_all_events_for_task_are_done(task)
-    if all_events_done:
-        task.done = True
-    else:
-        task.done = False
-    try:
-        db.session.commit()
-    except:
-        return "error marking the task as completely done"
+    update_done_status_of_task(task)
+    # all_events_done = check_if_all_events_for_task_are_done(task)
+    # if all_events_done:
+    #     task.done = True
+    # else:
+    #     task.done = False
+    # try:
+    #     db.session.commit()
+    # except:
+    #     return "error marking the task as completely done"
 
     key_result = get_key_result_from_task(task)
-    all_tasks_done = check_if_all_tasks_for_key_results_are_done(key_result)
-    if all_tasks_done:
-        key_result.done = True
-    else:
-        key_result.done = False
-    try:
-        db.session.commit()
-    except:
-        return "error marking the key_result as completely done"
+    update_done_status_of_key_result(key_result)
+    # all_tasks_done = check_if_all_tasks_for_key_results_are_done(key_result)
+    # if all_tasks_done:
+    #     key_result.done = True
+    # else:
+    #     key_result.done = False
+    # try:
+    #     db.session.commit()
+    # except:
+    #     return "error marking the key_result as completely done"
 
     objective = get_objective_from_key_result(key_result)
-    all_key_results_done = check_if_all_key_results_for_objective_are_done(objective)
-    if all_key_results_done:
-        objective.done = True
-    else:
-        objective.done = False
-    try:
-        db.session.commit()
-    except:
-        return "error marking the objective as completely done"
+    update_done_status_of_objective(objective)
+    # all_key_results_done = check_if_all_key_results_for_objective_are_done(objective)
+    # if all_key_results_done:
+    #     objective.done = True
+    # else:
+    #     objective.done = False
+    # try:
+    #     db.session.commit()
+    # except:
+    #     return "error marking the objective as completely done"
 
     return redirect('/tasks/date/'+str(event.date))
 
@@ -470,48 +490,84 @@ def mark_task_as_not_done():
     print("in not done")
     task = Task.query.get_or_404(request.form['task_id']) 
     event = Event.query.get_or_404(request.form['event_id']) 
-    print("task_id={}".format(task.id))
-    print("event_id={}".format(event.id))
+    print("\ttask_id={}".format(task.id))
+    print("\tevent_id={}".format(event.id))
     event.done = False
     try:
         db.session.commit()
     except:
         return "error marking the task for the day as done"
-
-    all_events_done = check_if_all_events_for_task_are_done(task)
-    if all_events_done:
-        task.done = True
-    else:
-        task.done = False
-    try:
-        db.session.commit()
-    except:
-        return "error marking the task as not done"
+    update_done_status_of_task(task)
+    # all_events_done = check_if_all_events_for_task_are_done(task)
+    # if all_events_done:
+    #     task.done = True
+    # else:
+    #     task.done = False
+    # try:
+    #     db.session.commit()
+    # except:
+    #     return "error marking the task as completely done"
 
     key_result = get_key_result_from_task(task)
-    print("key_result.id={}".format(key_result.id))
-    all_tasks_done = check_if_all_tasks_for_key_results_are_done(key_result)
-    if all_tasks_done:
-        key_result.done = True
-    else:
-        key_result.done = False
-    try:
-        db.session.commit()
-    except:
-        return "error marking the key_result as not done"
+    update_done_status_of_key_result(key_result)
+    # all_tasks_done = check_if_all_tasks_for_key_results_are_done(key_result)
+    # if all_tasks_done:
+    #     key_result.done = True
+    # else:
+    #     key_result.done = False
+    # try:
+    #     db.session.commit()
+    # except:
+    #     return "error marking the key_result as completely done"
 
     objective = get_objective_from_key_result(key_result)
-    all_key_results_done = check_if_all_key_results_for_objective_are_done(objective)
-    if all_key_results_done:
-        objective.done = True
-    else:
-        objective.done = False
+    update_done_status_of_objective(objective)
+    # all_key_results_done = check_if_all_key_results_for_objective_are_done(objective)
+    # if all_key_results_done:
+    #     objective.done = True
+    # else:
+    #     objective.done = False
+    # try:
+    #     db.session.commit()
+    # except:
+    #     return "error marking the objective as completely done"
+
+    return redirect('/tasks/date/'+str(event.date))
+
+def update_done_status_of_objective(objective):
+    count_events_not_done = db.session.query(Event).filter_by(done=False, objective_id=objective.id).count()
+    count_total_events = db.session.query(Event).filter_by(objective_id=objective.id).count()
+    objective.count_events_not_done = count_events_not_done
+    objective.count_total_events = count_total_events
+    objective.done = check_if_all_key_results_for_objective_are_done(objective)
     try:
         db.session.commit()
     except:
-        return "error marking the objective as not done"
+        print("error commiting :(")
+        return "error updating objective done status"
 
-    return redirect('/tasks/date/'+str(event.date))
+def update_done_status_of_key_result(key_result):
+    count_events_not_done = db.session.query(Event).filter_by(done=False, key_result_id=key_result.id).count()
+    count_total_events = db.session.query(Event).filter_by(key_result_id=key_result.id).count()
+    key_result.count_events_not_done = count_events_not_done
+    key_result.count_total_events = count_total_events
+    key_result.done = check_if_all_tasks_for_key_results_are_done(key_result)
+    try:
+        db.session.commit()
+    except:
+        return "error updating key_result done status"
+        
+def update_done_status_of_task(task):
+    print("in update_done_status_of_task")
+    count_events_not_done = db.session.query(Event).filter_by(done=False, task_id=task.id).count()
+    count_total_events = db.session.query(Event).filter_by(task_id=task.id).count()
+    task.count_events_not_done = count_events_not_done
+    task.count_total_events = count_total_events
+    task.done = check_if_all_events_for_task_are_done(task)
+    try:
+        db.session.commit()
+    except:
+        return "error updating task done status"
 
 def check_if_all_events_for_task_are_done(task):
     not_done_events = db.session.query(Event).filter_by(task_id=task.id, done=False).all()
