@@ -27,7 +27,6 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///okr.db'
 db = SQLAlchemy(app)
 
-
 class Objective(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
@@ -103,7 +102,6 @@ def index():
 @app.route('/select-date', methods=['POST'])
 def select_date():
     selected_date = request.form['selected_date']
-    print("selected_date={}".format(selected_date))
     return redirect('/tasks/date/' + selected_date)
 
 @app.route('/about', methods=['GET'])
@@ -116,8 +114,6 @@ def select_today():
 
 @app.route('/tasks/date/<desired_date>', methods=['GET'])
 def tasks_for_date(desired_date):
-    objectives = Objective.query.order_by(Objective.id).all()
-    print("objectives={}".format(objectives))
     events = db.session.query(Event).filter_by(date=desired_date).all()
     events_tasks_kr_objectives = []
     for event in events:
@@ -149,7 +145,6 @@ def create_key_result():
         db.session.commit()
     except:
         return 'There was an issue updating done status of objective'
-
     return redirect('/')
 
 @app.route('/create/task', methods=['POST'])
@@ -221,7 +216,6 @@ def delete_task(id):
     except:
         return 'There was a problem deleting that task'
 
-
 @app.route('/update/objective/<int:id>', methods=['GET','POST'])
 def update_objective(id):
     objective = Objective.query.get_or_404(id)
@@ -234,7 +228,6 @@ def update_objective(id):
             return 'there was an issue updating your objective'
     else:
         return render_template('update_objective.html', objective=objective)
-
 
 @app.route('/update/key_result/<int:id>', methods=['GET','POST'])
 def update_key_result(id):
@@ -276,7 +269,6 @@ def set_task_recurrence(id):
             db.session.commit()
         except:
             return 'there was an issue updating your task'
-        
     else:  # is_recurring == "true"
         cadence = request.form['recurrence_cadence']
         start_date = request.form['start_date']
@@ -295,7 +287,6 @@ def set_task_recurrence(id):
             db.session.commit()
         except:
             return 'there was an issue updating your task'
-        
     return redirect('/')
 
 def delete_events(task_id):
@@ -331,7 +322,6 @@ def string_to_datetime(date_str):
     return d.date()
 
 def get_event_dates(task_id, start_date, end_date, cadence):
-    print("cadence={}".format(cadence))
     if cadence == "daily":
         daily_events_metadata = pandas.date_range(start_date,end_date)
         return [i.strftime('%Y-%m-%d') for i in daily_events_metadata]
@@ -349,19 +339,15 @@ def get_event_dates(task_id, start_date, end_date, cadence):
             freq=pandas.DateOffset(years=1)
             )
         return [i.strftime('%Y-%m-%d') for i in yearly_events_metadata]
-        # print("yearly_events_metadata = {}".format(yearly_events_metadata))
 
 # Citation: https://stackoverflow.com/a/4040338 
 def num_months_between_two_dates(date1, date2):
     date1 = string_to_datetime(date1)
     date2 = string_to_datetime(date2)
-    print("num_months_between_two_dates={}".format((date1.year - date2.year) * 12 + date1.month - date2.month))
     return abs((date1.year - date2.year) * 12 + date1.month - date2.month) + 1 # add one to include date
 
 # Citation: https://stackoverflow.com/a/51881983
 def month_range_day(start, periods):
-    print("start={}".format(start))
-    print("periods={}".format(periods))
     start_date = pandas.Timestamp(start).date()
     month_range = pandas.date_range(start=start_date, periods=periods, freq='M')
     month_day = month_range.day.values
@@ -384,48 +370,32 @@ def instructions():
 def mark_task_as_done():
     task = Task.query.get_or_404(request.form['task_id']) 
     event = Event.query.get_or_404(request.form['event_id']) 
-    print("in done")
-    print("\ttask_id={}".format(task.id))
-    print("\tevent_id={}".format(event.id))
-
     event.done = True
     try:
         db.session.commit()
     except:
         return "error marking the task for the day as done"
     update_done_status_of_task(task)
-
     key_result = get_key_result_from_task(task)
     update_done_status_of_key_result(key_result)
-
-
     objective = get_objective_from_key_result(key_result)
     update_done_status_of_objective(objective)
-
-
     return redirect('/tasks/date/'+str(event.date))
-
 
 @app.route('/task/not-done', methods=['POST'])
 def mark_task_as_not_done():
-    print("in not done")
     task = Task.query.get_or_404(request.form['task_id']) 
     event = Event.query.get_or_404(request.form['event_id']) 
-    print("\ttask_id={}".format(task.id))
-    print("\tevent_id={}".format(event.id))
     event.done = False
     try:
         db.session.commit()
     except:
         return "error marking the task for the day as done"
     update_done_status_of_task(task)
-
     key_result = get_key_result_from_task(task)
     update_done_status_of_key_result(key_result)
-
     objective = get_objective_from_key_result(key_result)
     update_done_status_of_objective(objective)
-
     return redirect('/tasks/date/'+str(event.date))
 
 def update_done_status_of_objective(objective):
@@ -437,7 +407,6 @@ def update_done_status_of_objective(objective):
     try:
         db.session.commit()
     except:
-        print("error commiting :(")
         return "error updating objective done status"
 
 def update_done_status_of_key_result(key_result):
@@ -452,7 +421,6 @@ def update_done_status_of_key_result(key_result):
         return "error updating key_result done status"
         
 def update_done_status_of_task(task):
-    print("in update_done_status_of_task")
     count_events_not_done = db.session.query(Event).filter_by(done=False, task_id=task.id).count()
     count_total_events = db.session.query(Event).filter_by(task_id=task.id).count()
     task.count_events_not_done = count_events_not_done
@@ -465,7 +433,6 @@ def update_done_status_of_task(task):
 
 def check_if_all_events_for_task_are_done(task):
     not_done_events = db.session.query(Event).filter_by(task_id=task.id, done=False).all()
-    print("not_done_events={}".format(not_done_events))
 
     if len(not_done_events) > 0:
         return False
@@ -473,14 +440,12 @@ def check_if_all_events_for_task_are_done(task):
 
 def check_if_all_tasks_for_key_results_are_done(key_result):
     not_done_tasks_for_key_result = db.session.query(Task).filter_by(key_result_id=key_result.id, done=False).all()
-    print("not_done_tasks_for_key_result={}".format(not_done_tasks_for_key_result))
     if len(not_done_tasks_for_key_result) > 0:
         return False
     return True
 
 def check_if_all_key_results_for_objective_are_done(objective):
     not_done_key_result_for_objective = db.session.query(Key_Result).filter_by(objective_id=objective.id, done=False).all()
-    print("not_done_key_result_for_objective={}".format(not_done_key_result_for_objective))
     if len(not_done_key_result_for_objective) > 0:
         return False
     return True
@@ -494,12 +459,7 @@ def get_key_result_from_task(task):
 def get_objective_from_key_result(key_result):
     return db.session.query(Objective).filter_by(id=key_result.objective_id).all()[0]
 
-def get_fraction_not_done_events_from_objective(objective):
-    not_done_events = db.session.query(Event).filter_by(done=False, objective_id=objective.id).count()
-    all_events = db.session.query(Event).filter_by(objective_id=objective.id).count()
-    print("in get_fraction_not_done_events_from_objective; objective.id={}".format(objective.id))
-    print("\tnot_done_events={}".format(not_done_events))
-    print("\tall_events={}".format(all_events))
 
 if __name__ == "__main__":
     app.run(debug=True)
+
