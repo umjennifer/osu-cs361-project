@@ -67,21 +67,25 @@
                               <div class="accordion-item">
                                   <h2 class="accordion-header" id="panelsStayOpen-kr-{{kr.id}}">
                                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsekr-{{kr.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapsekr-{{kr.id}}">
+
+
+
                                     {% if kr.tasks|length < 1%}
                                       <span class="badge text-bg-danger">Key Result (Action Required: Create an associated task)</span>
-                                    {% elif kr.done == false and kr.count_total_events == 0%}
-                                      <span class="badge text-bg-danger">Key Result (Action Required: Set recurrence for associated task(s))</span>
-                                    {% else %}
-                                      <span class="badge text-bg-secondary">Key Result</span>
-                                    {% endif %}
-
-
-                                    {% if kr.done == false %}
-                                      <span class="badge rounded-pill text-bg-primary">{{ kr.count_total_events -  kr.count_events_not_done}} / {{ kr.count_total_events }} Total Tasks Completed</span>
                                       <span class="tab-10px">{{kr.content}}</span>
                                     {% else %}
+                                      {% if kr.done == false %}
+                                        {% if kr.count_total_events == 0%}
+                                          <span class="badge text-bg-danger">Key Result (Action Required: Set recurrence for associated task(s))</span>
+                                          <span class="tab-10px">{{kr.content}}</span>
+                                        {% else %}
+                                          <span class="badge rounded-pill text-bg-primary">{{ kr.count_total_events -  kr.count_events_not_done}} / {{ kr.count_total_events }} Total Tasks Completed</span>
+                                          <span class="tab-10px">{{kr.content}}</span>
+                                        {% endif %} 
+                                      {% else %}
                                         <span class="badge rounded-pill text-bg-success">Done</span>
                                         <span class="tab-10px"><del>{{kr.content}}</del></span>
+                                      {% endif %}
                                     {% endif %}
 
                                   </button>

@@ -69,31 +69,7 @@ class Event(db.Model):
     key_result_id = db.Column(db.Integer, db.ForeignKey('key__result.id'), nullable=False)
     objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'), nullable=False)
 
-
-# class Deleted_Objective(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     id_of_deleted_objective = db.Column(db.Integer)
-#     content = db.Column(db.String(200), nullable=False)
-#     key_results = db.relationship('Deleted_Key_Result', backref='objective', cascade="all, delete-orphan")
-
-#     def __repr__(self):
-#         return '<Task %r>' % self.id
-
-# class Deleted_Key_Result(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     id_of_deleted_key_result = db.Column(db.Integer)
-#     content = db.Column(db.String(200), nullable=False)
-#     objective_id = db.Column(db.Integer, db.ForeignKey('deleted__objective.id'))
-#     tasks = db.relationship('Deleted_Task', backref='key_result', cascade="all, delete-orphan")
-
-# class Deleted_Task(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     id_of_deleted_task = db.Column(db.Integer)
-#     content = db.Column(db.String(200), nullable=False)
-#     key_result_id = db.Column(db.Integer, db.ForeignKey('deleted__key__result.id'))  # TODO: set as can't be null
-     # TODO: cascade delete
-
-# https://sureshdsk.dev/flask-decorator-to-measure-time-taken-for-a-request
+# Citation: https://sureshdsk.dev/flask-decorator-to-measure-time-taken-for-a-request
 @app.before_request
 def logging_before():
     # Store the start time for the request
@@ -116,10 +92,6 @@ def index():
         flash('New feature: You can now click "Today\'s Task" in the navigation bar to view your tasks for the day.') 
     objectives = Objective.query.order_by(Objective.id).all()
     events = Event.query.order_by(Event.task_id).all()
-
-    # for objective in objectives:
-    #     get_fraction_not_done_events_from_objective(objective)
-
     return render_template(
         'index.html', 
         objectives=objectives, 
@@ -179,8 +151,6 @@ def create_key_result():
         return 'There was an issue updating done status of objective'
 
     return redirect('/')
-    
-    
 
 @app.route('/create/task', methods=['POST'])
 def create_task():
@@ -224,13 +194,8 @@ def tips_hide():
 @app.route('/delete/objective/<int:id>')
 def delete_objective(id):
     objective_to_delete = Objective.query.get_or_404(id)
-    # new_deleted_objective = Deleted_Objective(content=objective_to_delete.content, id_of_deleted_objective=id)
     try:
         db.session.delete(objective_to_delete)
-        
-        # add the item to the recently deleted
-        # db.session.add(new_deleted_objective)
-
         db.session.commit()
         return redirect('/')
     except:
@@ -239,10 +204,8 @@ def delete_objective(id):
 @app.route('/delete/key_result/<int:id>')
 def delete_key_result(id):
     key_result_to_delete = Key_Result.query.get_or_404(id)
-    # new_deleted_key_result = Deleted_Key_Result(content=key_result_to_delete.content, id_of_deleted_key_result=id, objective_id=key_result_to_delete.objective_id)
     try:
         db.session.delete(key_result_to_delete)
-        # db.session.add(new_deleted_key_result)
         db.session.commit()
         return redirect('/')
     except:
@@ -251,10 +214,8 @@ def delete_key_result(id):
 @app.route('/delete/task/<int:id>')
 def delete_task(id):
     task_to_delete = Task.query.get_or_404(id)
-    # new_deleted_task = Deleted_Task(content=task_to_delete.content, id_of_deleted_task=id, key_result_id=task_to_delete.key_result_id)
     try:
         db.session.delete(task_to_delete)
-        # db.session.add(new_deleted_task)
         db.session.commit()
         return redirect('/')
     except:
@@ -364,9 +325,6 @@ def add_event_to_table(task_id, event_date_string):
     update_done_status_of_key_result(key_result)
     update_done_status_of_objective(objective)
 
-    
-
-
 def string_to_datetime(date_str):
     format = "%Y-%m-%d"
     d = datetime.datetime.strptime(date_str, format)
@@ -377,15 +335,12 @@ def get_event_dates(task_id, start_date, end_date, cadence):
     if cadence == "daily":
         daily_events_metadata = pandas.date_range(start_date,end_date)
         return [i.strftime('%Y-%m-%d') for i in daily_events_metadata]
-        # print("daily_events={}".format(daily_events))
     elif cadence == "weekly":
         weekly_events_metadata = pandas.date_range(start_date,end_date, freq='W')
         return [i.strftime('%Y-%m-%d') for i in weekly_events_metadata]
-        # print("weekly_events={}".format(weekly_events))
     elif cadence == "monthly":
         monthly_events_metadata = month_range_day(start_date, num_months_between_two_dates(start_date, end_date))
         return [i.strftime('%Y-%m-%d') for i in monthly_events_metadata]
-        # print("monthly_events_metadata={}".format(monthly_events_metadata))
     else:  # cadence == "yearly"
         yearly_events_metadata = pandas.date_range(
             start=start_date, 
@@ -425,13 +380,6 @@ def example():
 def instructions():
     return render_template('instructions.html')
 
-# @app.route('/recently-deleted', methods=['GET'])
-# def recently_deleted():
-#     deleted_objectives = Deleted_Objective.query.order_by(Deleted_Objective.id).all()
-#     deleted_key_results = Deleted_Key_Result.query.order_by(Deleted_Key_Result.id).all()
-#     deleted_tasks = Deleted_Task.query.order_by(Deleted_Task.id).all()
-#     return render_template('recently-deleted.html', deleted_objectives=deleted_objectives, deleted_key_results=deleted_key_results, deleted_tasks=deleted_tasks)
-
 @app.route('/task/done', methods=['POST'])
 def mark_task_as_done():
     task = Task.query.get_or_404(request.form['task_id']) 
@@ -446,43 +394,16 @@ def mark_task_as_done():
     except:
         return "error marking the task for the day as done"
     update_done_status_of_task(task)
-    # all_events_done = check_if_all_events_for_task_are_done(task)
-    # if all_events_done:
-    #     task.done = True
-    # else:
-    #     task.done = False
-    # try:
-    #     db.session.commit()
-    # except:
-    #     return "error marking the task as completely done"
 
     key_result = get_key_result_from_task(task)
     update_done_status_of_key_result(key_result)
-    # all_tasks_done = check_if_all_tasks_for_key_results_are_done(key_result)
-    # if all_tasks_done:
-    #     key_result.done = True
-    # else:
-    #     key_result.done = False
-    # try:
-    #     db.session.commit()
-    # except:
-    #     return "error marking the key_result as completely done"
+
 
     objective = get_objective_from_key_result(key_result)
     update_done_status_of_objective(objective)
-    # all_key_results_done = check_if_all_key_results_for_objective_are_done(objective)
-    # if all_key_results_done:
-    #     objective.done = True
-    # else:
-    #     objective.done = False
-    # try:
-    #     db.session.commit()
-    # except:
-    #     return "error marking the objective as completely done"
+
 
     return redirect('/tasks/date/'+str(event.date))
-
-
 
 
 @app.route('/task/not-done', methods=['POST'])
@@ -498,39 +419,12 @@ def mark_task_as_not_done():
     except:
         return "error marking the task for the day as done"
     update_done_status_of_task(task)
-    # all_events_done = check_if_all_events_for_task_are_done(task)
-    # if all_events_done:
-    #     task.done = True
-    # else:
-    #     task.done = False
-    # try:
-    #     db.session.commit()
-    # except:
-    #     return "error marking the task as completely done"
 
     key_result = get_key_result_from_task(task)
     update_done_status_of_key_result(key_result)
-    # all_tasks_done = check_if_all_tasks_for_key_results_are_done(key_result)
-    # if all_tasks_done:
-    #     key_result.done = True
-    # else:
-    #     key_result.done = False
-    # try:
-    #     db.session.commit()
-    # except:
-    #     return "error marking the key_result as completely done"
 
     objective = get_objective_from_key_result(key_result)
     update_done_status_of_objective(objective)
-    # all_key_results_done = check_if_all_key_results_for_objective_are_done(objective)
-    # if all_key_results_done:
-    #     objective.done = True
-    # else:
-    #     objective.done = False
-    # try:
-    #     db.session.commit()
-    # except:
-    #     return "error marking the objective as completely done"
 
     return redirect('/tasks/date/'+str(event.date))
 
@@ -571,9 +465,8 @@ def update_done_status_of_task(task):
 
 def check_if_all_events_for_task_are_done(task):
     not_done_events = db.session.query(Event).filter_by(task_id=task.id, done=False).all()
-    # done_events = db.session.query(Event).filter_by(task_id=task_id, done=True).all()
     print("not_done_events={}".format(not_done_events))
-    # print("done_events={}".format(done_events))
+
     if len(not_done_events) > 0:
         return False
     return True
@@ -608,45 +501,5 @@ def get_fraction_not_done_events_from_objective(objective):
     print("\tnot_done_events={}".format(not_done_events))
     print("\tall_events={}".format(all_events))
 
-# def get_key_results_from_objective(objective):
-#     return db.session.query(Key_Result).filter_by(objective_id=objective.id).all()
-
-# def get_tasks_from_key_result(key_result):
-#     return db.session.query(Task).filter_by(key_result_id=key_result.id).all()
-
-# def get_events_from_tasks(task):
-#     return db.session.query(Event).filter_by(task_id=task.id).all()
-
-# def get_events_from_objective(objective):
-#     print("objective={}".format(objective))
-#     events_for_objective = []
-#     key_results = get_key_results_from_objective(objective)
-#     for key_result in key_results:
-#         print("\tkey_result={}".format(key_result))
-#         tasks = get_tasks_from_key_result(key_result)
-#         for task in tasks:
-#             print("\t\ttask={}".format(task))
-#             events = get_events_from_tasks(task)
-#             print("\t\t\tevents={}".format(events))
-#         events_for_objective.extend(events)
-#     print(events_for_objective)
-#     return events_for_objective
-
-# def get_fraction_not_done_events_from_objective(objective):
-#     total_events = get_fraction_not_done_events_from_objective(objective)
-#     count_not_done = 0
-#     for event in total_events:
-#         if event.done is False:
-#             count_not_done += 1
-#     return count_not_done, len(total_events)
-
-
-
 if __name__ == "__main__":
     app.run(debug=True)
-
-# to create a new db
-# from app import app
-# from app import db
-# with app.app_context():
-#     db.create_all()
