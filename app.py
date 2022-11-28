@@ -73,6 +73,7 @@ class Event(db.Model):
 def logging_before():
     # Store the start time for the request
     app_ctx.start_time = time.perf_counter()
+
 @app.after_request
 def logging_after(response):
     # Get total time in milliseconds
@@ -371,7 +372,7 @@ def mark_task_as_done():
     task = Task.query.get_or_404(request.form['task_id']) 
     event = Event.query.get_or_404(request.form['event_id']) 
     event.done = True
-    try:
+    try: 
         db.session.commit()
     except:
         return "error marking the task for the day as done"
@@ -433,7 +434,6 @@ def update_done_status_of_task(task):
 
 def check_if_all_events_for_task_are_done(task):
     not_done_events = db.session.query(Event).filter_by(task_id=task.id, done=False).all()
-
     if len(not_done_events) > 0:
         return False
     return True

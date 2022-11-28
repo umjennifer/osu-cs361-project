@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 style="text-align: center;">Goal Tracker</h1>
+<h1 style="text-align: center;">Goals Tracker</h1>
 {% endblock %}
 
 {% block body %}
@@ -31,7 +31,9 @@
   <br>
 
   {% if objectives|length < 1%}
+    <div class="text-block" id="no-objectives">
       There are no objectives create one below.<br>
+    </div>
   {% else %}
       {% for objective in objectives %}
           <div class="accordion" id="{{objective.id}}_accordion">
@@ -79,10 +81,12 @@
                                           <span class="badge text-bg-danger">Key Result (Action Required: Set recurrence for associated task(s))</span>
                                           <span class="tab-10px">{{kr.content}}</span>
                                         {% else %}
+                                          <span class="badge text-bg-secondary">Key Result</span>
                                           <span class="badge rounded-pill text-bg-primary">{{ kr.count_total_events -  kr.count_events_not_done}} / {{ kr.count_total_events }} Total Tasks Completed</span>
                                           <span class="tab-10px">{{kr.content}}</span>
                                         {% endif %} 
                                       {% else %}
+                                        <span class="badge text-bg-secondary">Key Result</span>
                                         <span class="badge rounded-pill text-bg-success">Done</span>
                                         <span class="tab-10px"><del>{{kr.content}}</del></span>
                                       {% endif %}
@@ -261,7 +265,7 @@
   </form> 
 
   {% if show_tips %}
-    <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="An objective is a significant, concrete, clearly defined goal. For example:'be healthier'">What is an objective?</button>
+    <button type="button" id="objective_tool_tip" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="An objective is a significant, concrete, clearly defined goal. For example:'be healthier'">What is an objective?</button>
   {% endif %}
 
 {% endblock %}

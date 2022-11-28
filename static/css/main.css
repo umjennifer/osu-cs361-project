@@ -112,3 +112,12 @@ td {
 #instructions-block.text-block{
     padding: 2% 5% 2% 5%;
 }
+
+.objective_tool_tip {
+    margin-left: 2%;
+}
+
+#no-objectives.text-block {
+    padding: 0% 0% 0% 2%;
+
+}
