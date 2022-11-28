@@ -14,10 +14,6 @@ import pandas
 from pandas.tseries.offsets import DateOffset
 import calendar
 
-
-
-
-
 new_feature = False
 show_tips = False
 quoteservice = 'http://127.0.0.1:3000/'
@@ -74,27 +70,27 @@ class Event(db.Model):
     objective_id = db.Column(db.Integer, db.ForeignKey('objective.id'), nullable=False)
 
 
-class Deleted_Objective(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    id_of_deleted_objective = db.Column(db.Integer)
-    content = db.Column(db.String(200), nullable=False)
-    key_results = db.relationship('Deleted_Key_Result', backref='objective', cascade="all, delete-orphan")
+# class Deleted_Objective(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     id_of_deleted_objective = db.Column(db.Integer)
+#     content = db.Column(db.String(200), nullable=False)
+#     key_results = db.relationship('Deleted_Key_Result', backref='objective', cascade="all, delete-orphan")
 
-    def __repr__(self):
-        return '<Task %r>' % self.id
+#     def __repr__(self):
+#         return '<Task %r>' % self.id
 
-class Deleted_Key_Result(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    id_of_deleted_key_result = db.Column(db.Integer)
-    content = db.Column(db.String(200), nullable=False)
-    objective_id = db.Column(db.Integer, db.ForeignKey('deleted__objective.id'))
-    tasks = db.relationship('Deleted_Task', backref='key_result', cascade="all, delete-orphan")
+# class Deleted_Key_Result(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     id_of_deleted_key_result = db.Column(db.Integer)
+#     content = db.Column(db.String(200), nullable=False)
+#     objective_id = db.Column(db.Integer, db.ForeignKey('deleted__objective.id'))
+#     tasks = db.relationship('Deleted_Task', backref='key_result', cascade="all, delete-orphan")
 
-class Deleted_Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    id_of_deleted_task = db.Column(db.Integer)
-    content = db.Column(db.String(200), nullable=False)
-    key_result_id = db.Column(db.Integer, db.ForeignKey('deleted__key__result.id'))  # TODO: set as can't be null
+# class Deleted_Task(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     id_of_deleted_task = db.Column(db.Integer)
+#     content = db.Column(db.String(200), nullable=False)
+#     key_result_id = db.Column(db.Integer, db.ForeignKey('deleted__key__result.id'))  # TODO: set as can't be null
      # TODO: cascade delete
 
 # https://sureshdsk.dev/flask-decorator-to-measure-time-taken-for-a-request
@@ -117,7 +113,7 @@ def logging_after(response):
 def index():
     random_quote = get_random_quote()
     if new_feature is True:
-        flash('New feature: You can now use a date picker to add a due date to a task. Read the Changelog for more information and instructions.') 
+        flash('New feature: You can now click "Today\'s Task" in the navigation bar to view your tasks for the day.') 
     objectives = Objective.query.order_by(Objective.id).all()
     events = Event.query.order_by(Event.task_id).all()
 
@@ -137,6 +133,10 @@ def select_date():
     selected_date = request.form['selected_date']
     print("selected_date={}".format(selected_date))
     return redirect('/tasks/date/' + selected_date)
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
 
 @app.route('/tasks/date/today', methods=['GET'])
 def select_today():
@@ -224,12 +224,12 @@ def tips_hide():
 @app.route('/delete/objective/<int:id>')
 def delete_objective(id):
     objective_to_delete = Objective.query.get_or_404(id)
-    new_deleted_objective = Deleted_Objective(content=objective_to_delete.content, id_of_deleted_objective=id)
+    # new_deleted_objective = Deleted_Objective(content=objective_to_delete.content, id_of_deleted_objective=id)
     try:
         db.session.delete(objective_to_delete)
         
         # add the item to the recently deleted
-        db.session.add(new_deleted_objective)
+        # db.session.add(new_deleted_objective)
 
         db.session.commit()
         return redirect('/')
@@ -239,10 +239,10 @@ def delete_objective(id):
 @app.route('/delete/key_result/<int:id>')
 def delete_key_result(id):
     key_result_to_delete = Key_Result.query.get_or_404(id)
-    new_deleted_key_result = Deleted_Key_Result(content=key_result_to_delete.content, id_of_deleted_key_result=id, objective_id=key_result_to_delete.objective_id)
+    # new_deleted_key_result = Deleted_Key_Result(content=key_result_to_delete.content, id_of_deleted_key_result=id, objective_id=key_result_to_delete.objective_id)
     try:
         db.session.delete(key_result_to_delete)
-        db.session.add(new_deleted_key_result)
+        # db.session.add(new_deleted_key_result)
         db.session.commit()
         return redirect('/')
     except:
@@ -251,10 +251,10 @@ def delete_key_result(id):
 @app.route('/delete/task/<int:id>')
 def delete_task(id):
     task_to_delete = Task.query.get_or_404(id)
-    new_deleted_task = Deleted_Task(content=task_to_delete.content, id_of_deleted_task=id, key_result_id=task_to_delete.key_result_id)
+    # new_deleted_task = Deleted_Task(content=task_to_delete.content, id_of_deleted_task=id, key_result_id=task_to_delete.key_result_id)
     try:
         db.session.delete(task_to_delete)
-        db.session.add(new_deleted_task)
+        # db.session.add(new_deleted_task)
         db.session.commit()
         return redirect('/')
     except:
@@ -425,12 +425,12 @@ def example():
 def instructions():
     return render_template('instructions.html')
 
-@app.route('/recently-deleted', methods=['GET'])
-def recently_deleted():
-    deleted_objectives = Deleted_Objective.query.order_by(Deleted_Objective.id).all()
-    deleted_key_results = Deleted_Key_Result.query.order_by(Deleted_Key_Result.id).all()
-    deleted_tasks = Deleted_Task.query.order_by(Deleted_Task.id).all()
-    return render_template('recently-deleted.html', deleted_objectives=deleted_objectives, deleted_key_results=deleted_key_results, deleted_tasks=deleted_tasks)
+# @app.route('/recently-deleted', methods=['GET'])
+# def recently_deleted():
+#     deleted_objectives = Deleted_Objective.query.order_by(Deleted_Objective.id).all()
+#     deleted_key_results = Deleted_Key_Result.query.order_by(Deleted_Key_Result.id).all()
+#     deleted_tasks = Deleted_Task.query.order_by(Deleted_Task.id).all()
+#     return render_template('recently-deleted.html', deleted_objectives=deleted_objectives, deleted_key_results=deleted_key_results, deleted_tasks=deleted_tasks)
 
 @app.route('/task/done', methods=['POST'])
 def mark_task_as_done():

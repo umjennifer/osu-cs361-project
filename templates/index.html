@@ -20,12 +20,12 @@
   {% if show_tips %}
     <form action="/tips/hide" method="POST">
       <input type="hidden" name="tips_hide" id="tips_hide" value="false">
-      <input type="submit" value="Hide Tips">
+      <input type="submit" id="tips_hide_button" value="Hide Tips">
     </form>
   {% else %}
     <form action="/tips/show" method="POST">
       <input type="hidden" name="tips_show" id="tips_show" value="true">
-      <input type="submit" value="Show Tips">
+      <input type="submit"id="tips_show_button" value="Show Tips">
     </form>
   {% endif %}
   <br>
@@ -40,34 +40,24 @@
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseobjective-{{objective.id}}" aria-expanded="true" aria-controls="panelsStayOpen-collapseobjective-{{objective.id}}">
 
                       {% if objective.done == false and objective.count_events_not_done == 0 %}
-                       <span class="badge text-bg-danger">Objective (Action Required: Expand sections to see action required.)</span>
+                       <span class="badge text-bg-danger">Objective (Action Required: Expand sections to see action required)</span>
+                       <span class="tab-10px">{{objective.content}}</span>
                       {% elif objective.done == false %}
                         <span class="badge text-bg-light">Objective</span>
                           <span class="badge rounded-pill text-bg-primary"> {{ objective.count_total_events -  objective.count_events_not_done}} / {{ objective.count_total_events }} Total Tasks Completed</span>
                           <span class="tab-10px">{{objective.content}}</span>
                       {% else %}
+                          <span class="badge text-bg-light">Objective</span>
                           <span class="badge rounded-pill text-bg-success">Done</span>
                           <span class="tab-10px"><del>{{objective.content}}</del></span>
                       {% endif %}
-                        <span class="tab-10px">{{objective.content}}</span>
 
                     </button>
                   </h2>
                   <div id="panelsStayOpen-collapseobjective-{{objective.id}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingobjective-{{objective.id}}">
                     <div class="accordion-body">
 
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                          <form action="/update/objective/{{objective.id}}" method="GET">
-                            <button type="submit" class="btn btn-link btn-sm">
-                              Update Objective
-                            </button> 
-                          </form>
-                          <form action="/delete/objective/{{objective.id}}" method="GET" onsubmit="return confirm('Deleting this objective will delete all associated key results and tasks. Click OK to continue, otherwise click cancel.');">
-                            <button type="submit" class="btn btn-link btn-sm">
-                              Delete Objective
-                            </button> 
-                          </form>
-                        </div>
+
 
                       
                       {% if objective.key_results|length < 1%}
@@ -79,6 +69,8 @@
                                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsekr-{{kr.id}}" aria-expanded="false" aria-controls="panelsStayOpen-collapsekr-{{kr.id}}">
                                     {% if kr.tasks|length < 1%}
                                       <span class="badge text-bg-danger">Key Result (Action Required: Create an associated task)</span>
+                                    {% elif kr.done == false and kr.count_total_events == 0%}
+                                      <span class="badge text-bg-danger">Key Result (Action Required: Set recurrence for associated task(s))</span>
                                     {% else %}
                                       <span class="badge text-bg-secondary">Key Result</span>
                                     {% endif %}
@@ -96,19 +88,6 @@
                                   </h2>
                                   <div id="panelsStayOpen-collapsekr-{{kr.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingkr-{{kr.id}}">
                                   <div class="accordion-body">
-
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                      <form action="/update/key_result/{{kr.id}}" method="GET">
-                                        <button type="submit" class="btn btn-link btn-sm">
-                                          Update Key Result
-                                        </button> 
-                                      </form>
-                                      <form action="/delete/key_result/{{kr.id}}" method="GET" onsubmit="return confirm('Deleting this objective will delete all associated key results and tasks. Click OK to continue, otherwise click cancel.');">
-                                        <button type="submit" class="btn btn-link btn-sm">
-                                          Delete Key Result
-                                        </button> 
-                                      </form>
-                                    </div>
 
                                       {% if kr.tasks|length < 1%}
                                           There are no tasks.<br>
@@ -143,22 +122,9 @@
                                                   <div id="panelsStayOpen-collapse-task{{task.id}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading-task{{task.id}}">
                                                   <div class="accordion-body">
 
-                                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                                      <form action="/update/task/{{task.id}}" method="GET">
-                                                        <button type="submit" class="btn btn-link btn-sm">
-                                                          Update Task
-                                                        </button> 
-                                                      </form>
-                                                      <form action="/delete/task/{{task.id}}" method="GET" onsubmit="return confirm('This action cannot be undone. Click OK to continue, otherselect click cancel.');">
-                                                        <button type="submit" class="btn btn-link btn-sm">
-                                                          Delete Task
-                                                        </button> 
-                                                      </form>
-                                                    </div>
-
                                                       <p>
                                                         {% if task.startdate is none %}
-                                                          No recurrence; <a href="/update/task/{{task.id}}">set a recurrence.</a><br>
+                                                          No recurrence found: <a href="/update/task/{{task.id}}">set a recurrence.</a><br>
                                                         {% else %}
                                                           Recurrence: 
                                                           {% if task.cadence is none %}
@@ -200,10 +166,25 @@
                                                         {% endif %}
                                                       </p>
 
-                                                  </div>
-                                                  </div>
-                                              </div>
+                                                      <div class="btn-group" id="task" role="group" aria-label="Basic example">
+                                                        <form action="/update/task/{{task.id}}" method="GET">
+                                                          <button type="submit" class="btn btn-link btn-sm">
+                                                            Update Task
+                                                          </button> 
+                                                        </form>
+                                                        <form action="/delete/task/{{task.id}}" method="GET" onsubmit="return confirm('This action cannot be undone. Click OK to continue, otherselect click cancel.');">
+                                                          <button type="submit" class="btn btn-link btn-sm">
+                                                            Delete Task
+                                                          </button> 
+                                                        </form>
+                                                      </div>
 
+                                                  </div>
+                                                  </div>
+
+                                                  
+                                              </div>
+                                              
                                           {% endfor %}
                                       {% endif %}
                                           <form action="/create/task" method="POST">
@@ -211,6 +192,19 @@
                                               <input type="hidden" name="key_result_id" value="{{kr.id}}">
                                               <input type="submit" value="Add task">
                                           </form>
+
+                                          <div class="btn-group" id="keyresult" role="group" aria-label="Basic example">
+                                            <form action="/update/key_result/{{kr.id}}" method="GET">
+                                              <button type="submit" class="btn btn-link btn-sm">
+                                                Update Key Result
+                                              </button> 
+                                            </form>
+                                            <form action="/delete/key_result/{{kr.id}}" method="GET" onsubmit="return confirm('Deleting this objective will delete all associated key results and tasks. Click OK to continue, otherwise click cancel.');">
+                                              <button type="submit" class="btn btn-link btn-sm">
+                                                Delete Key Result
+                                              </button> 
+                                            </form>
+                                          </div>
 
                                           {% if show_tips %}
                                           <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="A task is a tangible, quantifiable TODO to acheive a key result. For example, for the 'gain 5% muscle mass' key result, tasks can include: 'exercise daily', 'get 2x physicals twice a year', etc.">
@@ -230,6 +224,19 @@
                           <input type="submit" value="Add key result">
                       </form>
 
+                      <div class="btn-group" id="objective" role="group" aria-label="Basic example">
+                        <form action="/update/objective/{{objective.id}}" method="GET">
+                          <button type="submit" class="btn btn-link btn-sm">
+                            Update Objective
+                          </button> 
+                        </form>
+                        <form action="/delete/objective/{{objective.id}}" method="GET" onsubmit="return confirm('Deleting this objective will delete all associated key results and tasks. Click OK to continue, otherwise click cancel.');">
+                          <button type="submit" class="btn btn-link btn-sm">
+                            Delete Objective
+                          </button> 
+                        </form>
+                      </div>
+
                       {% if show_tips %}
                       <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="popover" title="A key result is measurable success criteria used to track the achievement of that goal. For example for a 'be healthier' objective, key results can include 'gain 5% muscle mass'">
                         What is a key result?
@@ -246,7 +253,7 @@
   <br>
   <form action="/create/objective" method="POST">
       <input type="text" name="objective_content" id="objective_content" required>
-      <input type="submit" value="Add objective">
+      <input type="submit" value="Add objective / goal">
   </form> 
 
   {% if show_tips %}

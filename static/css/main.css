@@ -40,7 +40,8 @@ td {
 
 .anchor-link {
     color: gray;
-    text-decoration: none; 
+    text-decoration: none;
+    padding-left: .3em; 
 }
 
 .anchor-link:hover {
@@ -55,11 +56,59 @@ td {
 
 .alignleft {
 	float: left;
+    padding-left: 2%;
+    padding-top: 1%;
 }
 .alignright {
 	float: right;
+    padding-right: 2%;
+    padding-top: 1%;
 }
 
 .btn-link, .btn-link:hover, .btn-link:active, .btn-link:visited {
     color: silver !important;
+}
+
+.accordion {
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+#objective.btn-group {
+    padding-left: 75%;
+}
+
+#keyresult.btn-group {
+    padding-left: 73%;
+}
+
+#task.btn-group {
+    padding-left: 80%;
+}
+
+#objective_content {
+    margin-top: 0%;
+    margin-left: 2%;
+}
+
+#tips_hide_button {
+    margin-top: 0%;
+    margin-left: 2%;
+}
+
+#tips_show_button {
+    margin-top: 0%;
+    margin-left: 2%;
+}
+
+.text-block {
+    padding: 2% 5% 2% 5%;
+}
+
+.table-of-contents {
+    padding: 0% 5% 2% 5%;
+}
+
+#instructions-block.text-block{
+    padding: 2% 5% 2% 5%;
 }

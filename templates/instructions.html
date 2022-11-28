@@ -5,37 +5,186 @@
 {% endblock %}
 
 {% block body %}
-    <h2>Table of Contents</h2>
-    <div class="table-of-contents">
+
+    <div class="text-block">
+        <h2 id="about">About<a class="anchor-link " aria-label="Anchor" href="#about">#</a></h2>
+        <h3 id="what-is-this-product">What is this product?<a class="anchor-link " aria-label="Anchor" href="#what-is-this-product">#</a></h3>
+        <p><b>A goal tracker that uses objectives, key results, and tasks to keep you accountable. A goal == an objective.</b></p>
+
+        <p>Each objective has associated key result(s). Each key result has associated task(s). Tasks can be configured at different recurrences: one-time, daily, weekly, yearly.</p>
+
+        <p>Users can review and check off their tasks for each day. By doing this, the user will have a daily reminder of what they're working towards.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/OKR">More information about objective and key result (OKR)</a></p>
+
+        <h3 id="definitions">Definitions<a class="anchor-link " aria-label="Anchor" href="#definitions">#</a></h3>
         <ul>
-            <li><a href="#add-an-objective">Add an objective</a></li>
-            <li><a href="#add-a-key-result">Add a key result</a></li>
-            <li><a href="#add-a-due-date-to-a-task">Add a due date to a task</a></li>
+            <li>
+                <b>Objective</b>
+                <ul>
+                    <li>A clearly defined goal</li>
+                    <li>An objective will either be in a state of</li>
+                    <ul>
+                        <li><span class="badge rounded-pill text-bg-primary"> 5 / 10 Total Tasks Completed</span>: In-progress with number of associated tasks (cumulative for all associated key results) completed thus far</li>
+                        <li><span class="badge text-bg-danger">Objective (Action Required: Expand sections to see action required.)</span>: In-progress with action required</li>
+                        <li><span class="badge rounded-pill text-bg-success">Done</span>: Done</li>
+                    </ul>
+                </ul>
+            </li>
+            <li>
+                <b>Key Result</b>
+                <ul>
+                    <li>A measurable success criteria used to track attainment of an objective. There can be many key results associated with one objective.</li>
+                    <li>A key result will either be in a state of</li>
+                    <ul>
+                        <li><span class="badge rounded-pill text-bg-primary">1 / 2 Total Tasks Completed</span>: In-progress with number of associated tasks completed thus far (cumulative for all associated tasks)</li>
+                        <li><span class="badge text-bg-danger">Key Result (Action Required: Create an associated task)</span>: In-progress with action required; a task needs to be created for the key result</li>
+                        <li><span class="badge text-bg-danger">Key Result (Action Required: Set recurrence for associated task(s))</span>: In-progress with action required; an associated task needs a recurrence set</li>
+                        <li><span class="badge rounded-pill text-bg-success">Done</span>: Done</li>
+                    </ul>
+                </ul>
+            </li>
+            <li>
+                <b>Task</b>
+                <ul>
+                    <li>A concrete activity that needs to be accomplished to track attainment of a key result. There can be many tasks associated with one key result.</li>
+                    <li>A key result will either be in a state of</li>
+                    <ul>
+                        <li><span class="badge text-bg-danger">Task (Action Required: Set Recurrence)</span>: In-progress with action required; a recurrence needs to be set</li>
+                        <li><span class="badge text-bg-dark">Task (One-Time)</span>: One-time task </li>
+                        <li><span class="badge text-bg-dark">Task (Recurring)</span>: Recurring task</li>
+                        <li><span class="badge rounded-pill text-bg-success">Done</span>: Done</li>
+                    </ul>
+                </ul>
+            </li>
+            <li>
+                <b>Event</b>
+                <ul>
+                    <li>An event for a task. If a task is set to occur only one, only one event on the selected day will be created. If a task is set to recurr (ex: monthly from October 1, 2022 to December 1, 2022), multiple events for the task will be created (ex: October 1, 2022, November 1, 2022, and December 1, 2022).</li>
+                </ul>
+            </li>
         </ul>
-    </div>
-    <br>
-
-
-
-    <h2 id="add-an-objective">Add an objective <a class="anchor-link " aria-label="Anchor" href="#add-an-objective" style="padding-left: 0.375em;">#</a></h2>
-    <ol>
-        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
-        <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-        <li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-    </ol>
-
-    <h2 id="add-a-key-result">Add a key result<a class="anchor-link " aria-label="Anchor" href="#add-a-key-result" style="padding-left: 0.375em;">#</a></h2>
-    <ol>
-        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
-        <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-        <li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-    </ol>
     
-    <h2 id="add-a-due-date-to-a-task">Add a due date to a task<a class="anchor-link " aria-label="Anchor" href="#add-a-due-date-to-a-task" style="padding-left: 0.375em;">#</a></h2>
-    <ol>
-        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
-        <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-        <li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-    </ol>
+    <h3 id="example">Example<a class="anchor-link " aria-label="Anchor" href="#example">#</a></h3>
+    <ul>
+        <li>
+            <b>Objective:</b> Post more vlogs on YouTube (October 2022 - November 2022)
+            <ul>
+                <li>
+                    <b>Key Result:</b> Post one video per week between October 1, 2022 and November 31, 2022
+                    <ul>
+                        <li><b>Task:</b> Brainstorm ideas once a month between October 1, 2022 and November 31, 2022</li>
+                        <li><b>Task:</b> Create publishing schedule</li>
+                        <li><b>Task:</b> Edit video 1x/week</li>
+                        <li><b>Task:</b> Publish video 1x/week </li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Key Result:</b> Create a YouTube profile pic
+                    <ul>
+                        <li><b>Task:</b> Brainstorm ideas once a month between October 1, 2022 and November 31, 2022</li>
+                        <li><b>Task:</b> Spike Test Canva</li>
+                        <li><b>Task:</b> Spike Test Procreate</li>
+                        <li><b>Task:</b> Publish video 1x/week </li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Key Result:</b> Research and document trends
+                    <ul>
+                        <li><b>Task:</b> Brainstorm ideas once a month between October 1, 2022 and November 31, 2022</li>
+                        <li><b>Task:</b> Look up viral videos 1x/week</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </div>
+    <div class="text-block" id="instructions-block">
+        <h2 id="instructions"> Instructions<a class="anchor-link " aria-label="Anchor" href="#instructions">#</a></h2>
+        <h3 id="add-an-objective">Add an objective / goal <a class="anchor-link " aria-label="Anchor" href="#add-an-objective">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the bottom of the page.</li>
+            <li>In the input field, enter an objective / goal.</li>
+            <li> Click <b>Add objective / goal</b>/</li>
+        </ol>
+
+        <h3 id="edit-an-objective">Edit an objective / goal <a class="anchor-link " aria-label="Anchor" href="#edit-an-objective">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the bottom of the page.</li>
+            <li>Click <b>Edit Objective</b>/</li>
+        </ol>
+
+        <h3 id="delete-an-objective">Delete an objective / goal <a class="anchor-link " aria-label="Anchor" href="#delete-an-objective">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the bottom of the page.</li>
+            <li>Click <b>Delete Objective</b>/</li>
+        </ol>
+
+        <h3 id="add-a-key-result">Add a key result<a class="anchor-link " aria-label="Anchor" href="#add-a-key-result">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to add a key result for. Expand the accordion if needed.</li>
+            <li>In the input field, enter a key result.</li>
+            <li> Click <b>Add key result</b>.</li>
+        </ol>
+
+        <h3 id="edit-a-key-result">Edit a key result<a class="anchor-link " aria-label="Anchor" href="#edit-a-key-result">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to edit a key result for. Expand the accordion if needed.</li>
+            <li>Click <b>Edit Key Result</b>.</li>
+        </ol>
+        
+        <h3 id="delete-a-key-result">Delete a key result<a class="anchor-link " aria-label="Anchor" href="#delete-a-key-result">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to delete a key result for. Expand the accordion if needed.</li>
+            <li>Click <b>Delete Key Result</b>.</li>
+        </ol>
+        
+        <h3 id="add-a-task">Add a task<a class="anchor-link " aria-label="Anchor" href="#add-a-task">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to add an objective for. Expand the accordion if needed.</li>
+            <li>Navigate to the the key result you want to add a task for. Expand the accordion if needed.</li>
+            <li>In the input field, enter a task.</li>
+            <li><a href="#set-a-recurrence-for-a-task">Set a recurrence for the task.</a></li>
+        </ol>
+
+        <h3 id="set-a-recurrence-for-a-task">Set a recurrence for a task<a class="anchor-link " aria-label="Anchor" href="#set-a-recurrence-for-a-task">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to add an objective for. Expand the accordion if needed.</li>
+            <li>Navigate to the the key result you want to add a task for. Expand the accordion if needed.</li>
+            <li>Navigate to the the task you want to add a task for. Expand the accordion if needed.</li>
+            <li>If a recurrence has not been created, click "set a recurrence" or click "Update Task".</li>
+            <li>A new page will load. On this page, select the desired recurrence. If a recurrence was already created for the task, the new set recurrence will override the previous recurrence.</li>
+        </ol>
+
+        <h3 id="edit-a-task">Edit a task<a class="anchor-link " aria-label="Anchor" href="#edit-a-task">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to edit an objective for. Expand the accordion if needed.</li>
+            <li>Navigate to the the key result you want to edit a task for. Expand the accordion if needed.</li>
+            <li>Click <b>Edit Task</b>.</li>
+        </ol>
+
+        <h3 id="delete-a-task">Delete a task<a class="anchor-link " aria-label="Anchor" href="#delete-a-task">#</a></h3>
+        <ol>
+            <li>Navigate to <a href="/">Home</a>.</li>
+            <li>Navigate to the the objective you want to delete an objective for. Expand the accordion if needed.</li>
+            <li>Navigate to the the key result you want to delete a task for. Expand the accordion if needed.</li>
+            <li>Click <b>Delete Task</b>.</li>
+        </ol>
+
+        <h3 id="view-todays-task">View today's task<a class="anchor-link " aria-label="Anchor" href="#view-todays-task">#</a></h3>
+        <ol>
+            <li>In the navigation bar, click "Today's Tasks"</li>
+        </ol>
+    </div>
+    
 
 {% endblock %}
