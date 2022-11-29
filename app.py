@@ -89,7 +89,7 @@ def logging_after(response):
 def index():
     random_quote = get_random_quote()
     if new_feature is True:
-        flash('New feature: You can now click "Today\'s Task" in the navigation bar to view your tasks for the day.') 
+        flash('New feature: You can now click "Today\'s Task" in the navigation bar to view your tasks for the day. Visit Changelog for more info.') 
     objectives = Objective.query.order_by(Objective.id).all()
     events = Event.query.order_by(Event.task_id).all()
     return render_template(
